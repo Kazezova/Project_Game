@@ -7,7 +7,7 @@ pygame.display.set_caption("Pix Drop")
 icon = pygame.transform.scale(pygame.image.load("pix.png"), (32, 32))
 pygame.display.set_icon(icon)
 clock = pygame.time.Clock()
-fps = 50
+fps = 60
 click = False
 def menu(): 
     pix_Img = pygame.image.load("pix.png")
