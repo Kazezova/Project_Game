@@ -11,11 +11,12 @@ fps = 50
 click = False
 def menu(): 
     pix_Img = pygame.image.load("pix.png")
-    pix_Img = pygame.transform.scale(pix_Img, (pix_Img.get_width()//2, pix_Img.get_height()//2))
+    # pix_Img = pygame.transform.scale(pix_Img, (pix_Img.get_width()//2, pix_Img.get_height()//2))
     start = pygame.image.load("start_btn.png")
     x = 0
     dx = 1
-    while True:
+    running = True
+    while running:
         screen.fill((255,255,255))
         x += dx
         if x <= -25:
@@ -27,6 +28,7 @@ def menu():
         if btn.collidepoint((mx, my)):
             if click:
                 game(pix_Img)
+                running = False
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -40,8 +42,6 @@ def menu():
         pygame.display.flip()
         clock.tick(fps)
 
-
-
 def game(pix_Img):
     pix_X = 70
     pix_Y = -20
@@ -53,7 +53,6 @@ def game(pix_Img):
     plat_Y = 100
     running = True
     collide = False
-    
     while running:
         screen.fill((255,255,255))
         for event in pygame.event.get():
