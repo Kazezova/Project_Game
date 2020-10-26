@@ -16,7 +16,7 @@ fps = 60
 click = False
 
 class Pix:
-    dy = 20
+    dy = 7
     def __init__(self, x, y, image):
         self.image = image
         self.height = image.get_height()
@@ -24,10 +24,13 @@ class Pix:
         self.x = x
         self.y = y
         self.rect = self.image.get_rect()
-    def draw(self):
-        screen.blit(self.image, (self.x, self.y))
+    def draw(self, size=None):
+        if size == None:
+            screen.blit(self.image, (self.x, self.y))
+        else:
+            screen.blit(pygame.transform.scale(self.image, size), (self.x, self.y))
     def fall(self):
-        Pix.dy = 20
+        Pix.dy = 7
         self.y += Pix.dy
     def collide(self, smth):
         if self.y + self.height >= smth.y and (self.x+self.width>smth.x and self.x+self.width<smth.x+smth.width):
@@ -44,7 +47,7 @@ class Platform:
         self.y = y
         self.height = image.get_height()
         self.width = image.get_width()
-        self.dx = 5
+        self.dx = 3
         self.rect = self.image.get_rect()
         
     def move(self):
@@ -141,7 +144,10 @@ def game(pix_Img):
             platforms[i].move()
         for i in range(len(enemys)):
             enemys[i].move()
-        my_pix.draw()
+        if col==False:
+            my_pix.draw((my_pix.width, my_pix.height+20))
+        else:
+            my_pix.draw()
         for i in range(len(platforms)):
             platforms[i].draw()
         for i in range(len(enemys)):
@@ -166,7 +172,7 @@ def game(pix_Img):
                     del platforms[0]
                     platforms.append(Platform.generator(enemys[0]))
                     del enemys[0]
-                    platforms.append(Enemy.generator())
+                    enemys.append(Enemy.generator())
 
         pygame.display.flip()
         clock.tick(fps)    
