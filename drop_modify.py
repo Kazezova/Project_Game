@@ -165,7 +165,7 @@ def game(pix_Img):
                     del platforms[0]
                     platforms.append(Platform.generator(enemys[0]))
                     del enemys[0]
-                    platforms.append(Enemy.generator())
+                    enemys.append(Enemy.generator())
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     my_pix.fall()
