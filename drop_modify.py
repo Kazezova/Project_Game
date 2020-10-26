@@ -6,6 +6,11 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Pix Drop")
 icon = pygame.transform.scale(pygame.image.load("pix.png"), (32, 32))
 pygame.display.set_icon(icon)
+back_img = pygame.image.load("angryimg.png")
+cloud_img = pygame.image.load("cloud.png")
+opp = pygame.image.load("download.png")
+cloud_x = 400
+cloud_dx = -1
 clock = pygame.time.Clock()
 fps = 60
 click = False
@@ -50,8 +55,8 @@ class Platform:
             self.dx *= -1
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
-    def generator(smth):
-        new = Platform(smth.x,smth.y, pygame.image.load("platform_short.png"))
+    def generator(ene):
+        new = Platform(ene.x, ene.y, pygame.image.load("platform_short.png"))
         return new  
     def __del__(self):
         pass
@@ -63,6 +68,17 @@ class Enemy(Platform):
         new = Enemy(20, 600, pygame.image.load("platform1_kill.png"))
         return new  
 
+def background():
+    global cloud_x
+    screen.blit(back_img, (0,0))
+    if cloud_x + opp.get_width() + 400 < 0:
+        cloud_x = 600
+    cloud_x += -2
+    screen.blit(opp, (cloud_x+200, 100))
+    screen.blit(opp, (cloud_x+50, 50))
+    screen.blit(opp, (cloud_x, 150))
+    screen.blit(opp, (cloud_x-150, 300))
+        
 def menu(): 
     pix_Img = pygame.image.load("pix.png")
     pix_Img = pygame.transform.scale(pix_Img, (pix_Img.get_width()//2, pix_Img.get_height()//2))
@@ -71,7 +87,7 @@ def menu():
     dx = 1
     running = True
     while running:
-        screen.fill((255,255,255))
+        background()
         x += dx
         if x <= -25:
             dx *= -1
@@ -116,7 +132,7 @@ def game(pix_Img):
     running = True
     collide = False
     while running:
-        screen.fill((255,255,255))
+        background()
         my_pix.fall()
         col = my_pix.collide(platforms[0])
         if my_pix.y > platforms[0].y + platforms[0].height and col == False:
@@ -144,8 +160,15 @@ def game(pix_Img):
                     platforms.append(Platform.generator(enemys[0]))
                     del enemys[0]
                     platforms.append(Enemy.generator())
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    my_pix.fall()
+                    del platforms[0]
+                    platforms.append(Platform.generator(enemys[0]))
+                    del enemys[0]
+                    platforms.append(Enemy.generator())
+
         pygame.display.flip()
-        clock.tick(fps)
-        
+        clock.tick(fps)    
 menu()
 pygame.quit()
