@@ -15,8 +15,7 @@ FPS = 60
 x, y = 200, 100
 dx, dy = 0, 0
 plat_x, plat_y = 150, 300
-gravity = 0.5
-run = True
+gravity = 1
 dx = 2
 margin = 20
 
@@ -34,46 +33,65 @@ plat_height = plat_img.get_height()
 plat_width = plat_img.get_width()
 
 
-class pix:
-    def __init__(self, x, y, image, dx, dy):
+class Pix:
+    def __init__(self, x, y, image):
         self.x = x
         self.y = y
-        self.dx = dx
-        self.dy = dy
         self.image = image
+        self.height = image.get_height()
+        self.width = image.get_width()
 
-while run:
-    screen.fill(WHITE)
-    #gravity
-    prev_x, prev_y = x, y
-    dy += gravity
-    if dy > 5:
-        dy = 5
-    y += dy
-    
-    if plat_x>(450-plat_width-margin) and dx>0:
-        dx = -2
-    elif plat_x<margin and dx<0:
-        dx = 2
-    plat_x += dx
+    def fall(self):
+        self.y -= gravity
 
-    collide = False
-    if plat_y < (y+pix_height) and (y+pix_height) < (plat_y+plat_img.get_height()):
-        collide = True
-    if collide:
-        y = plat_y-pix_height
-        x += dx
+    def collide(self,other):
+        if (self.y+self.height > other.y) and (self.x+self.width > other.x and self.x < other.x+other.width):
+            dy = 0
+            self.x +=other.dx
+            self.y = other.y - self.height
+            return True
+        return False
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+class Platform:
+    def __init__(self, x, y, image):
+        self.x = x
+        self.y = y
+        self.image = image
+        self.height = image.get_height()
+        self.width = image.get_width()
+        
+    def move(self):
 
 
-    screen.blit(pix_img, (x, y))
-    screen.blit(plat_img, (plat_x, plat_y))
-    # screen.blit(myfont.render(
-    #     f"{plat_y}, {prev_y}, {collide},{plat_img.get_height()}",
-    #     False, (255, 0, 0)), (50, 50))
-    pygame.display.flip()
-    clock.tick(FPS)
+def game():
+    run = True
+    pix = Pix(50,50,pix_img)
+    plat = (200,200,plat_img)
+    dy = 0
+    while run:
+        screen.fill(WHITE)
+        #gravity
+        dy += gravity
+        if dy > 5:
+            dy = 5
+        pix.y += dy
+
+        if plat.x>(450-plat_width-margin) and dx>0:
+            dx = -2
+        elif plat_x<margin and dx<0:
+            dx = 2
+        plat_x += dx
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+
+        screen.blit(pix.image, (pix.x, pix.y))
+        screen.blit(plat.image, (plat.x, plat.y))
+        screen.blit(myfont.render(
+             f"{plat_y}, {collide},{plat_img.get_height()}", False, (255, 0, 0)), (50, 50))
+        pygame.display.flip()
+        clock.tick(FPS)
+game()
 pygame.quit()

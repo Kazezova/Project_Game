@@ -14,6 +14,12 @@ size = (450, 750)
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 fps = 60
+<<<<<<< Updated upstream
+=======
+cloud_x = 400
+cloud_dx = -1
+camera_y = 0
+>>>>>>> Stashed changes
 
 #images
 platform_images = ["platform_long.png", "platform_short.png"]
@@ -157,6 +163,13 @@ def game(pix_Img, score):
     pix_X = 100
     pix_Y = 0
     my_pix = Pix(pix_X, pix_Y, pix_Img)
+<<<<<<< Updated upstream
+=======
+
+    platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
+    enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
+    camera_y = 0
+>>>>>>> Stashed changes
     running = True
     fall = False
     camera_fall = False
@@ -212,6 +225,7 @@ def game(pix_Img, score):
                     fall = True
                     del platforms[0]
                     my_pix.fall()
+<<<<<<< Updated upstream
                     camera_fall = True
                     c = c - 50
                     
@@ -258,6 +272,25 @@ def continue_game(pix, score):
         s.fill((0,0,0,32)) 
         screen.blit(s, (0,0))
         screen.blit(cont, (size[0]//2-cont.get_width()//2, size[1]//2-cont.get_height()//2))
+=======
+                    if 'long' in enemys[0].picname:
+                        image = py_platform[0]
+                    elif 'short' in enemys[0].picname:
+                        image = py_platform[1]
+                    platforms.append(
+                        Platform(enemys[0].x, enemys[0].y, image[0], image[1]))
+                    del enemys[0]
+                    new = data[rand(2,4)]
+                    enemys.append(Enemy(new[0], enemys[-1].y+100, new[2][0], new[2][1]))
+        if not my_pix.collide():
+            my_pix.y-= camera_y
+            for i in range(len(platforms)):
+                platforms[i].y -= camera_y
+            for i in range(len(enemys)):
+                enemys[i].y-=camera_y
+            camera_y+= 2
+            print(1)
+>>>>>>> Stashed changes
         pygame.display.flip()
         clock.tick(fps)
 
