@@ -12,7 +12,6 @@ screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 FPS = 60
 
-
 x, y = 200, 100
 dx, dy = 0, 0
 plat_x, plat_y = 150, 300
