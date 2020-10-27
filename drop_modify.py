@@ -27,10 +27,10 @@ cont = pygame.image.load("continue.png")
 #platfroms
 data = [
     [0, 100,  py_platform[rand(0, len(py_platform)-1)]], 
-    [rand(0,200), 200, py_platform[rand(0, len(py_platform)-1)]], 
-    [rand(0,200), 300, py_enemy[rand(0, len(py_enemy)-1)]], 
-    [rand(0,200), 400, py_enemy[rand(0, len(py_enemy)-1)]],
-    [rand(0,200), 500, py_enemy[rand(0, len(py_enemy)-1)]]
+    [rand(0,100), 200, py_platform[rand(0, len(py_platform)-1)]], 
+    [rand(0,100), 300, py_enemy[rand(0, len(py_enemy)-1)]], 
+    [rand(0,100), 400, py_enemy[rand(0, len(py_enemy)-1)]],
+    [rand(0,100), 500, py_enemy[rand(0, len(py_enemy)-1)]]
 ]
 
 #cloud 
@@ -161,7 +161,6 @@ def game(pix_Img, score):
     while running:
         background()
         col = my_pix.collide(platforms[0])
-        print(fall)
         if col==False:
             my_pix.draw((my_pix.width, my_pix.height+20))
             my_pix.fall()
