@@ -175,6 +175,8 @@ def menu():
         screen.blit(start, (size[0]//2-start.get_width()//2 + x, size[1]//3 + pix_Img.get_height()))
         pygame.display.flip()
         clock.tick(fps)
+platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
+enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
 
 def game(pix_Img, score):
     pix_X = 100
