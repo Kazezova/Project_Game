@@ -7,7 +7,8 @@ pygame.init()
 pygame.display.set_caption("Pix Drop")
 icon = pygame.transform.scale(pygame.image.load("pix.png"), (32, 32))
 pygame.display.set_icon(icon)
-myfont = pygame.font.SysFont('Comic Sans MS', 40)
+font = pygame.font.Font('Jesus_Heals.ttf', 60)
+bord = pygame.font.Font('Jesus_Lives.ttf', 60)
 
 #frame settings
 size = (450, 750)
@@ -19,22 +20,27 @@ cloud_dx = -1
 camera_y = 0
 
 #images
-platform_images = ["platform_long.png", "platform_short.png"]
-enemy_images = ["kill_long.png", "kill_short.png"]
-py_platform = [(pygame.image.load(i), i) for i in platform_images]
-py_enemy = [(pygame.image.load(i), i) for i in enemy_images]
+star = pygame.image.load("star.png")
+star = pygame.transform.scale(star, (32,32))
 back_img = pygame.image.load("angryimg.png")
 cloud_img = pygame.image.load("cloud.png")
 opp = pygame.image.load("download.png")
 cont = pygame.image.load("continue.png")
 
+platform_images = ["platform_long.png", "platform_short.png"]
+enemy_images = ["kill_long.png", "kill_short.png"]
+py_platform = [(pygame.image.load(i), i) for i in platform_images]
+py_enemy = [(pygame.image.load(i), i) for i in enemy_images]
+
 #platfroms
+itn = (0, 200)
+dst = 120
 data = [
-    [0, 200,  py_platform[rand(0, len(py_platform)-1)]], 
-    [rand(0,100), 320, py_platform[rand(0, len(py_platform)-1)]], 
-    [rand(0,100), 440, py_enemy[rand(0, len(py_enemy)-1)]], 
-    [rand(0,100), 560, py_enemy[rand(0, len(py_enemy)-1)]],
-    [rand(0,100), 680, py_enemy[rand(0, len(py_enemy)-1)]]
+    [itn[0], itn[1],  py_platform[rand(0, len(py_platform)-1)]], 
+    [rand(0,itn[1]), itn[1]+dst, py_platform[rand(0, len(py_platform)-1)]], 
+    [rand(0,itn[1]), itn[1]+dst*2, py_enemy[rand(0, len(py_enemy)-1)]], 
+    [rand(0,itn[1]), itn[1]+dst*3, py_enemy[rand(0, len(py_enemy)-1)]],
+    [rand(0,itn[1]), itn[1]+dst*4, py_enemy[rand(0, len(py_enemy)-1)]]
 ]
 
 #cloud 
@@ -42,15 +48,14 @@ cloud_x = 400
 cloud_dx = -1
 
 class Pix:
-
     dy = 7
-
-    def __init__(self, x, y, image):
+    def __init__(self, x, y, image, score):
         self.image = image
         self.height = image.get_height()
         self.width = image.get_width()
         self.x = x
         self.y = y
+        self.score = score
 
     def draw(self, size=None):
         if size == None:
@@ -63,7 +68,7 @@ class Pix:
         self.y += Pix.dy
 
     def collide(self, smth):
-        if self.y + self.height >= smth.y and (self.x-25+self.width>smth.x and self.x+25<smth.x+smth.width):
+        if self.y+self.height+20 >= smth.y and (smth.x<self.x+self.width//2 and self.x+self.width//2<smth.x+smth.width):
             Pix.dy = 0
             self.y = smth.y - self.height
             self.x += smth.dx
@@ -72,6 +77,8 @@ class Pix:
 
 
 class Platform:
+    cnt=0
+    sz=0
     def __init__(self, x, y, image, picname):
         self.image = image
         self.picname = picname
@@ -91,6 +98,23 @@ class Platform:
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
 
+    def draw_smth(self, smth):
+        if Platform.cnt<=20:
+            screen.blit(pygame.transform.scale(smth, (Platform.sz,Platform.sz)), (self.x+(self.width//2)-Platform.sz//2, self.y-Platform.sz-10))
+            Platform.cnt+=1
+            Platform.sz+=2
+        elif Platform.cnt>20 and Platform.cnt<=30:
+            screen.blit(pygame.transform.scale(smth, (Platform.sz,Platform.sz)), (self.x+(self.width//2)-Platform.sz//2, self.y-Platform.sz-10))
+            Platform.cnt+=1
+            Platform.sz-=2
+        elif Platform.cnt>30:
+            if Platform.sz<star.get_width():
+                screen.blit(pygame.transform.scale(smth, (Platform.sz,Platform.sz)), (self.x+(self.width//2)-Platform.sz//2, self.y-Platform.sz-10))
+            else:
+                screen.blit(smth, (self.x+(self.width//2)-smth.get_width()//2, self.y-smth.get_height()-10))
+            Platform.cnt+=1
+            Platform.sz+=2
+
     def __del__(self):
         pass
 
@@ -98,8 +122,6 @@ class Enemy(Platform):
     def __init__(self, x, y, image, picname):
         super().__init__(x, y, image, picname)
 
-platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
-enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
 
 def background():
     global cloud_x
@@ -112,7 +134,6 @@ def background():
     screen.blit(opp, (cloud_x, 150))
     screen.blit(opp, (cloud_x-150, 300))
 
-click = False        
 def menu(): 
     pix_Img = pygame.image.load("pix.png")
     pix_Img = pygame.transform.scale(pix_Img, (32, 32))
@@ -120,7 +141,7 @@ def menu():
     x = 0
     dx = 1
     running = True
-
+    click = False 
     while running:
         background()
         mx, my = pygame.mouse.get_pos()
@@ -156,10 +177,9 @@ def menu():
         clock.tick(fps)
 
 def game(pix_Img, score):
-    global platforms, enemys
     pix_X = 100
     pix_Y = 0
-    my_pix = Pix(pix_X, pix_Y, pix_Img)
+    my_pix = Pix(pix_X, pix_Y, pix_Img, score)
 
     platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
     enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
@@ -167,7 +187,6 @@ def game(pix_Img, score):
     fall = False
     camera_fall = False
     c = 0
-
     while running:
         background()
         col = my_pix.collide(platforms[0])
@@ -184,18 +203,22 @@ def game(pix_Img, score):
             del enemys[0]
             new = data[rand(2,4)]
             enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1]))
-            my_pix.draw()
+            my_pix.score += 1
+            Platform.cnt = 0
+            Platform.sz = 0
             fall = False
+            my_pix.draw()
         else:
             my_pix.draw()
 
         if my_pix.y > platforms[0].y + platforms[0].height and col == False:
-            continue_game(pix_Img, 20)
+            continue_game(pix_Img, my_pix.score)
             running = False
 
         for i in range(len(platforms)):
             platforms[i].move()
             platforms[i].draw()
+        platforms[-1].draw_smth(star)
         for i in range(len(enemys)):
             enemys[i].move()
             enemys[i].draw()
@@ -206,14 +229,8 @@ def game(pix_Img, score):
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    running = False
                     menu()
-                # if event.key == pygame.K_SPACE:
-                #     my_pix.fall()
-                #     del platforms[0]
-                #     platforms.append(Platform.generator(enemys[0]))
-                #     del enemys[0]
-                #     enemys.append(Enemy.generator())
+                    running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     fall = True
@@ -226,15 +243,16 @@ def game(pix_Img, score):
             dy = 3
             my_pix.y-= dy
             for i in range(len(platforms)):
-                platforms[i].y-= dy
+                platforms[i].y-=dy
             for i in range(len(enemys)):
-                enemys[i].y-= dy
+                enemys[i].y-=dy
             c+=1
             if c==0:
                 camera_fall=False
-            
 
-        screen.blit(myfont.render(f"{my_pix.y},{c}", False, (255, 0, 0)), (50, 50))
+        screen.blit(font.render(f"{my_pix.score}", False, (255,255,255)), (size[0]//2, 50))
+        screen.blit(bord.render(f"{my_pix.score}", False, (47,109,246)), (size[0]//2, 50))
+
         pygame.display.flip()
         clock.tick(fps)
 
@@ -260,6 +278,8 @@ def continue_game(pix, score):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     game(pix, score)
+                    running = False
+
         s = pygame.Surface((size[0],size[1]), pygame.SRCALPHA)   
         s.fill((0,0,0,32)) 
         screen.blit(s, (0,0))
