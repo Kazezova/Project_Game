@@ -10,9 +10,9 @@ clock = pygame.time.Clock()
 fps = 60
 click = False
 def menu(): 
-    pix_Img = pygame.image.load("pix.png")
-    # pix_Img = pygame.transform.scale(pix_Img, (pix_Img.get_width()//2, pix_Img.get_height()//2))
-    start = pygame.image.load("start_btn.png")
+    pix_Img = pygame.image.load("pix64.png")
+    # pix_Img = pygame.transform.scale(pix_Img, (pix_Img.get_width(), pix_Img.get_height()))
+    start = pygame.image.load("play_btn.png")
     x = 0
     dx = 1
     running = True
@@ -62,6 +62,7 @@ def game(pix_Img):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                    menu()
         save_y = pix_Y
         pix_Y += dy
         if pix_Y + pix_Img.get_height() > plat_Y + plat_Img.get_height():
