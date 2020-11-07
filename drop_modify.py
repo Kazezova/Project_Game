@@ -44,6 +44,7 @@ opp = pygame.image.load("download.png")
 cont = pygame.image.load("cont.png")
 cont_btn_img = pygame.image.load("btn100.png")
 not_cont_img = pygame.image.load("btn_cancel_1.png")
+restart_btn_img = pygame.image.load("restart_btn.png")
 best_score_img = pygame.image.load("best_score.png")
 star = pygame.image.load("star32.png")
 leaf = pygame.image.load("leaf32.png")
@@ -296,7 +297,10 @@ def game(pix_Img, user_score, platforms, enemys):
                 cur.execute('UPDATE User SET best_score = (?)', (user_best_score,))
             cur.execute('UPDATE User SET stars = (?)', (user_stars,))
             conn.commit()
-            continue_game(pix_Img, user_score, platforms, enemys)
+            if user_stars>=100:
+                continue_game(pix_Img, user_score, platforms, enemys)
+            else:
+                restart(pix_Img, user_score)
             running = False
         
         for event in pygame.event.get():
@@ -369,6 +373,41 @@ def update_platform(platforms, enemys):
         enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1], 3, False, 20))
     else:
         enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1]))
+
+def restart(pix, score):
+    global user_best_score, user_stars
+    running = True
+    while running:
+        background(user_stars)
+        mx, my = pygame.mouse.get_pos()
+        restart_btn = pygame.Rect(size[0]//2-restart_btn_img.get_width()//2, size[1]//2-restart_btn_img.get_height()//2, 
+                            restart_btn_img.get_width(), 
+                            restart_btn_img.get_height())
+        click = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                cur.close()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+        if restart_btn.collidepoint((mx, my)):
+            if click:
+                platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
+                enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
+                game(pix, 0, platforms, enemys)
+                running = False
+        score_f = star_font.render(f"score", False, (47,109,246))
+        user_score = font.render(f"{score}", False, (47,109,246))
+        best_score = star_font.render(f"best: {user_best_score}", False, (255,140,16))
+        screen.blit(score_f, (size[0]//2 - score_f.get_width()//2, size[1]//2 - 225))
+        screen.blit(user_score, (size[0]//2 - user_score.get_width()//2, size[1]//2 - 200))
+        screen.blit(best_score, (size[0]//2 - best_score.get_width()//2, size[1]//2 - 125))
+        screen.blit(restart_btn_img,  (size[0]//2-restart_btn_img.get_width()//2, size[1]//2-restart_btn_img.get_height()//2))
+       
+        pygame.display.flip()
+        clock.tick(fps)
 
 def continue_game(pix, score, platforms, enemys):
     global user_best_score, user_stars
