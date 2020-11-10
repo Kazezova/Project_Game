@@ -55,6 +55,8 @@ platform_images = ["platform_long.png", "platform_short.png"]
 enemy_images = ["kill_long.png", "kill_short.png"]
 py_platform = [(pygame.image.load(i), i) for i in platform_images]
 py_enemy = [(pygame.image.load(i), i) for i in enemy_images]
+# dead_pix = pygame.image.load("pix_kill100.png")
+# dead_pix = pygame.transform.scale(dead_pix, (32,32))
 
 #platfroms
 itn = (0, 200)
@@ -203,7 +205,7 @@ def background(user_stars):
 def menu(): 
     pix_Img = pygame.image.load(character_image)
     # pix_Img = pygame.transform.scale(pix_Img, (50,50))
-    start = pygame.image.load("play_btn.png")
+    start_btn = pygame.image.load("play_btn.png")
     x = 0
     dx = 1
     running = True
@@ -211,10 +213,10 @@ def menu():
     while running:
         background(user_stars)
         mx, my = pygame.mouse.get_pos()
-        btn = pygame.Rect(size[0]//2-start.get_width()//2 + x, 
+        btn = pygame.Rect(size[0]//2-start_btn.get_width()//2 + x, 
                             size[1] //3 + pix_Img.get_height(), 
-                            start.get_width(), 
-                            start.get_height()
+                            start_btn.get_width(), 
+                            start_btn.get_height()
                             )
         click = False
 
@@ -242,7 +244,7 @@ def menu():
         screen.blit(best_score, 
         (size[0]//2- best_score.get_width()//2 + x , size[1]//3 - best_score_img.get_height()))
         screen.blit(pix_Img, (size[0]//2-pix_Img.get_width()//2 + x , size[1]//3))
-        screen.blit(start, (size[0]//2-start.get_width()//2 + x, size[1]//3 + pix_Img.get_height()))
+        screen.blit(start_btn, (size[0]//2-start_btn.get_width()//2 + x, size[1]//3 + pix_Img.get_height()))
         pygame.display.flip()
         clock.tick(fps)
 
@@ -258,6 +260,15 @@ def game(pix_Img, user_score, platforms, enemys):
     camera_fall = False
     bomb = False
     c = 0
+    bar_size = (100, 8)
+    bar_rect = pygame.Rect(size[0]//2-bar_size[0]//2, 110, bar_size[0], bar_size[1])
+    max_width = bar_size[0]-2
+    min_time = 0  
+    time = 10
+    trick_time = 10
+    coefficient = max_width / time
+    dt = 0
+    start = False
     while running:
         background(user_stars)
         
@@ -274,7 +285,6 @@ def game(pix_Img, user_score, platforms, enemys):
                 enemys[i].draw()
             else:
                 enemys[i].draw_alpha()
-
         col = my_pix.collide(platforms[0])
         if col==False:
             my_pix.draw((my_pix.width, my_pix.height+20))
@@ -282,16 +292,29 @@ def game(pix_Img, user_score, platforms, enemys):
         elif col==True and fall==True:
             if platforms[0].trick_name == "star":
                 user_stars += 1
+            elif platforms[0].trick_name == "leaf":
+                pass
+            elif platforms[0].trick_name == "mashroom":
+                pass
+            elif platforms[0].trick_name == "carrot":
+                pass
             user_score += 1
             Platform.cnt = 0
             Platform.sz = 0
             fall = False
             update_platform(platforms, enemys)
             my_pix.draw()
+            time = 10
+            start = True
         else:
             my_pix.draw()
+            if start == True:
+                if time > min_time:
+                    time -= dt
 
         if my_pix.y > platforms[0].y + platforms[0].height and col == False:
+            # if my_pix.collide(enemys[0]) or my_pix.collide(enemys[1]) or my_pix.collide(enemys[2]):
+            #     my_pix.image = dead_pix
             if user_score>user_best_score:
                 user_best_score = user_score
                 cur.execute('UPDATE User SET best_score = (?)', (user_best_score,))
@@ -326,6 +349,15 @@ def game(pix_Img, user_score, platforms, enemys):
                     camera_fall = True
                     bomb = True
                     c = c - 40
+                    time = 10
+
+        if time<=0 and fall==False:
+            fall = True
+            del platforms[0]
+            my_pix.fall()
+            camera_fall = True
+            c = c - 40
+
         if camera_fall:
             dy = 3
             my_pix.y-= dy
@@ -340,12 +372,19 @@ def game(pix_Img, user_score, platforms, enemys):
             if c==0:
                 camera_fall=False
                 bomb = False
-
-        screen.blit(font.render(f"{user_score}", False, (255,255,255)), (size[0]//2, 50))
-        screen.blit(bord.render(f"{user_score}", False, (47,109,246)), (size[0]//2, 50))
-
+        
+        score_txt = font.render(f"{user_score}", False, (255,255,255))
+        score_txt_b = bord.render(f"{user_score}", False, (47,109,246))
+        screen.blit(score_txt, (size[0]//2-score_txt.get_width()//2, 30))
+        screen.blit(score_txt_b, (size[0]//2-score_txt_b.get_width()//2, 30))
+        width = time * coefficient
+        pygame.draw.rect(screen, (118,200,250), (size[0]//2-bar_size[0]//2 - 3, 110 - 3, bar_size[0]+6, bar_size[1]+6))
+        pygame.draw.rect(screen, (212,246,254), (size[0]//2-bar_size[0]//2 - 2, 110 - 2, bar_size[0]+4, bar_size[1]+4))
+        pygame.draw.rect(screen, (47,109,246), bar_rect)
+        pygame.draw.rect(screen, (249,229,106), (size[0]//2-bar_size[0]//2 + 1, 110 + 1, width, bar_size[1]-2))
+    
         pygame.display.flip()
-        clock.tick(fps)
+        dt = clock.tick(fps)/500
 
 def update_platform(platforms, enemys):
     spec_case = rand(0,15)
@@ -445,7 +484,7 @@ def continue_game(pix, score, platforms, enemys):
                 running = False
         elif not_cont_btn.collidepoint((mx, my)):
             if click:
-                menu()
+                restart(pix, score)
                 running = False
 
         s = pygame.Surface((size[0],size[1]), pygame.SRCALPHA)   
