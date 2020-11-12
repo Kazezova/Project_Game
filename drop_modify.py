@@ -51,6 +51,7 @@ leaf = pygame.image.load("leaf32.png")
 mushroom = pygame.image.load("mushroom32.png")
 carrot = pygame.image.load("carrot32.png")
 trick = {"star":star, "leaf":leaf, "mushroom":mushroom, "carrot":carrot}
+home = pygame.image.load("home.png")
 platform_images = ["platform_long.png", "platform_short.png"]
 enemy_images = ["kill_long.png", "kill_short.png"]
 py_platform = [(pygame.image.load(i), i) for i in platform_images]
@@ -264,7 +265,6 @@ def game(pix_Img, user_score, platforms, enemys):
     start = False
     while running:
         background(user_stars)
-        
         col = my_pix.collide(platforms[0])
         if col==False:
             my_pix.draw((my_pix.width, my_pix.height+20))
@@ -418,6 +418,7 @@ def restart(pix, score):
         restart_btn = pygame.Rect(size[0]//2-restart_btn_img.get_width()//2, size[1]//2-restart_btn_img.get_height()//2, 
                             restart_btn_img.get_width(), 
                             restart_btn_img.get_height())
+        home_btn = pygame.Rect(size[0]-home.get_width()-10, 10, home.get_width(), home.get_height())
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -433,6 +434,10 @@ def restart(pix, score):
                 enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
                 game(pix, 0, platforms, enemys)
                 running = False
+        if home_btn.collidepoint((mx, my)):
+            if click:
+                menu()
+                running = False
         score_f = star_font.render(f"score", False, (47,109,246))
         user_score = font.render(f"{score}", False, (47,109,246))
         best_score = star_font.render(f"best: {user_best_score}", False, (255,140,16))
@@ -440,7 +445,7 @@ def restart(pix, score):
         screen.blit(user_score, (size[0]//2 - user_score.get_width()//2, size[1]//2 - 200))
         screen.blit(best_score, (size[0]//2 - best_score.get_width()//2, size[1]//2 - 125))
         screen.blit(restart_btn_img,  (size[0]//2-restart_btn_img.get_width()//2, size[1]//2-restart_btn_img.get_height()//2))
-       
+        screen.blit(home, (size[0]-home.get_width()-10, 10))
         pygame.display.flip()
         clock.tick(fps)
 
