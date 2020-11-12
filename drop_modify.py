@@ -110,8 +110,7 @@ class Pix:
 class Platform:
     cnt=0
     sz=0
-    ex_dx = 8
-    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, trick=None, trick_name=None):
+    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, trick=None, trick_name=None, move_sharply=False):
         self.image = image
         self.picname = picname
         self.x = x
@@ -124,6 +123,7 @@ class Platform:
         self.alpha = alpha
         self.trick = trick
         self.trick_name = trick_name
+        self.move_sharply = move_sharply
 
     def move(self):
         if self.special:
@@ -136,13 +136,6 @@ class Platform:
                 self.dx *= -1
             elif self.x>= size[0]-self.width+2:
                 self.dx *= -1
-
-    def tricky_move(self):
-        self.x += Platform.ex_dx
-        if self.x <= 0:
-            Platform.ex_dx *= -1
-        elif self.x>= size[0]-self.width+2:
-            Platform.ex_dx *= -1
 
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
@@ -186,8 +179,8 @@ class Platform:
             
 
 class Enemy(Platform):
-    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2):
-        super().__init__(x, y, image, picname, dx, special, opacity, alpha)
+    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, move_sharply=False):
+        super().__init__(x, y, image, picname, dx, special, opacity, alpha, None, None, move_sharply)
 
 def background(user_stars):
     global cloud_x
@@ -272,19 +265,6 @@ def game(pix_Img, user_score, platforms, enemys):
     while running:
         background(user_stars)
         
-        for i in range(len(platforms)):
-            platforms[i].move()
-            if platforms[i].opacity == 0:
-                platforms[i].draw()
-            else:
-                platforms[i].draw_alpha()
-        platforms[-1].draw_smth(platforms[-1].trick)
-        for i in range(len(enemys)):
-            enemys[i].move()
-            if enemys[i].opacity == 0:
-                enemys[i].draw()
-            else:
-                enemys[i].draw_alpha()
         col = my_pix.collide(platforms[0])
         if col==False:
             my_pix.draw((my_pix.width, my_pix.height+20))
@@ -311,6 +291,20 @@ def game(pix_Img, user_score, platforms, enemys):
             if start == True:
                 if time > min_time:
                     time -= dt
+
+        for i in range(len(platforms)):
+            platforms[i].move()
+            if platforms[i].opacity == 0:
+                platforms[i].draw()
+            else:
+                platforms[i].draw_alpha()
+        platforms[-1].draw_smth(platforms[-1].trick)
+        for i in range(len(enemys)):
+            enemys[i].move()
+            if enemys[i].opacity == 0:
+                enemys[i].draw()
+            else:
+                enemys[i].draw_alpha()
 
         if my_pix.y > platforms[0].y + platforms[0].height and col == False:
             # if my_pix.collide(enemys[0]) or my_pix.collide(enemys[1]) or my_pix.collide(enemys[2]):
@@ -410,6 +404,8 @@ def update_platform(platforms, enemys):
         enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1], 3, True))
     elif spec_case == 4:
         enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1], 3, False, 20))
+    elif spec_case == 6:
+        enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1], 3, False, 0, 2, True))
     else:
         enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1]))
 
