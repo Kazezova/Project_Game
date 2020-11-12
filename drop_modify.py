@@ -52,6 +52,7 @@ mushroom = pygame.image.load("mushroom32.png")
 carrot = pygame.image.load("carrot32.png")
 trick = {"star":star, "leaf":leaf, "mushroom":mushroom, "carrot":carrot}
 home = pygame.image.load("home.png")
+bomb_img = pygame.image.load("bomb.png")
 platform_images = ["platform_long.png", "platform_short.png"]
 enemy_images = ["kill_long.png", "kill_short.png"]
 py_platform = [(pygame.image.load(i), i) for i in platform_images]
@@ -264,6 +265,7 @@ def game(pix_Img, user_score, platforms, enemys):
     dt = 0
     start = False
     while running:
+        click = False
         background(user_stars)
         col = my_pix.collide(platforms[0])
         if col==False:
@@ -331,19 +333,39 @@ def game(pix_Img, user_score, platforms, enemys):
                     running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    fall = True
-                    del platforms[0]
-                    my_pix.fall()
-                    camera_fall = True
-                    c = c - 40
-                if event.button == 3 and user_stars>=10:
-                    user_stars -= 10
-                    del platforms[-1]
-                    update_platform(platforms, enemys)
-                    camera_fall = True
-                    bomb = True
-                    c = c - 40
-                    time = 10
+                    click = True
+                    # fall = True
+                    # del platforms[0]
+                    # my_pix.fall()
+                    # camera_fall = True
+                    # c = c - 40
+                # if event.button == 3 and user_stars>=10:
+                #     user_stars -= 10
+                #     del platforms[-1]
+                #     update_platform(platforms, enemys)
+                #     camera_fall = True
+                #     bomb = True
+                #     c = c - 40
+                #     time = 10
+                
+        mx, my = pygame.mouse.get_pos()
+        bomb_btn = pygame.Rect(20, size[1]-bomb_img.get_height()-70, bomb_img.get_width(),  bomb_img.get_height())
+
+        if click:
+            if bomb_btn.collidepoint((mx,my)) and user_stars>=10:
+                user_stars -= 10
+                del platforms[-1]
+                update_platform(platforms, enemys)
+                camera_fall = True
+                bomb = True
+                c = c - 40
+                time = 10
+            else:
+                fall = True
+                del platforms[0]
+                my_pix.fall()
+                camera_fall = True
+                c = c - 40
 
         if time<=0 and fall==False:
             fall = True
@@ -376,7 +398,7 @@ def game(pix_Img, user_score, platforms, enemys):
         pygame.draw.rect(screen, (212,246,254), (size[0]//2-bar_size[0]//2 - 2, 110 - 2, bar_size[0]+4, bar_size[1]+4))
         pygame.draw.rect(screen, (47,109,246), bar_rect)
         pygame.draw.rect(screen, (249,229,106), (size[0]//2-bar_size[0]//2 + 1, 110 + 1, width, bar_size[1]-2))
-    
+        screen.blit(bomb_img, (20, size[1]-bomb_img.get_height()-70))
         pygame.display.flip()
         dt = clock.tick(fps)/500
 
@@ -479,6 +501,9 @@ def continue_game(pix, score, platforms, enemys):
                     click = True
         if cont_btn.collidepoint((mx, my)):
             if click:
+                user_stars -= 100
+                cur.execute('UPDATE User SET stars = (?)', (user_stars,))
+                conn.commit()
                 platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
                 enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
                 game(pix, score, platforms, enemys)
