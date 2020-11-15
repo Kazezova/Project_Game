@@ -63,6 +63,7 @@ trick = {"star":star, "leaf":leaf, "mushroom":mushroom, "carrot":carrot,
 "violet": pygame.transform.scale(ball_violet, (24, 24)), "yellow": pygame.transform.scale(ball_yellow, (24, 24))}
 
 bonus_platform = pygame.image.load("platform_very_long.png")
+bonus_kill = pygame.image.load("platform_very_long_kill.png")
 bonus_enemy = pygame.image.load("kill_long.png")
 bonus_enemy = pygame.transform.scale(bonus_enemy, (size[0], bonus_enemy.get_height()))
 star_rainbow = pygame.image.load("star_rainbow.png")
@@ -611,7 +612,7 @@ def bonus_raund(pix, pix_big, user_score, color):
     opacity = 4
     s = pygame.Surface(size).convert()
     platforms = [Platform(0, 200+(dst*i), bonus_platform, None, 0) for i in range(2)]
-    enemys = [Enemy(0, 200+(dst*i), bonus_platform, None, 0) for i in range(2,5)]
+    enemys = [Enemy(0, 200+(dst*i), bonus_kill, None, 0) for i in range(2,5)]
     fall = False
     font_for_bonus = pygame.font.Font('Jesus_Heals.ttf', 120)
     bord_for_bonus = pygame.font.Font('Jesus_Lives.ttf', 120)
