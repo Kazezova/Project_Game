@@ -464,7 +464,6 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False):
 
 def update_platform(platforms, enemys):
     spec_case = rand(0,15)
-    spec_case = 5
     if 'long' in enemys[0].picname:
         image = py_platform[0]
     elif 'short' in enemys[0].picname:
