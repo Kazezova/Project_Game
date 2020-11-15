@@ -523,7 +523,7 @@ def restart(pix, pix_Img_big, score):
             if click:
                 platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
                 enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
-                game(pix, pix_Img_big, 0, platforms, enemys)
+                game(pix, pix_Img_big, 0, platforms, enemys, False, [])
                 running = False
         if home_btn.collidepoint((mx, my)):
             if click:
@@ -639,7 +639,7 @@ def bonus_raund(pix, pix_big, user_score, color):
             user_score += 1
             platforms.append(Platform(0, enemys[0].y, bonus_platform, None, 0))
             del enemys[0]
-            enemys.append(Enemy(0, enemys[-1].y+120, bonus_platform, None, 0))
+            enemys.append(Enemy(0, enemys[-1].y+120, bonus_kill, None, 0))
             fall = False
             Platform.sz = 0
             Platform.cnt = 0
@@ -680,7 +680,7 @@ def bonus_raund(pix, pix_big, user_score, color):
             conn.commit()
             platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
             enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
-            game(pix, pix_big, user_score, platforms, enemys, True)
+            game(pix, pix_big, user_score, platforms, enemys, True, [])
             running = False
 
         if camera_fall:
