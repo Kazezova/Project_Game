@@ -261,7 +261,8 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
     fall = False
     camera_fall = False
     bomb = False
-    change = False
+    mushroom_change = False
+    leaf_change = False
     c = 0
     bar_size = (100, 8)
     bar_mushroom = (50,8)
@@ -275,7 +276,6 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
     coefficient = max_width / time
     coefficient_m = max_width_m / time_m
     dt = 0
-    dtt = 0
     start = False
     while running:
         click = False
@@ -288,12 +288,12 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
             if platforms[0].trick_name == "star":
                 user_stars += 1
             elif platforms[0].trick_name == "leaf":
-                pass
+                leaf_change = True
             elif platforms[0].trick_name == "mushroom":
                 pix_X = my_pix.pix_X()
                 pix_Y = my_pix.pix_Y()
                 my_pix = Pix(pix_X, pix_Y, pix_Img_big)
-                change = True
+                mushroom_change = True
                 time_m = 10
             elif platforms[0].trick_name == "carrot":
                 pass
@@ -311,7 +311,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
                 if time > min_time:
                     time -= dt
 
-        if change == True:
+        if mushroom_change == True or leaf_change == True:
             if time_m > min_time:
                 time_m -= dt
         for i in range(len(platforms)):
@@ -391,7 +391,8 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
             pix_X = my_pix.pix_X()
             pix_Y = my_pix.pix_Y()
             my_pix = Pix(pix_X, pix_Y, pix_Img)
-            change = False
+            mushroom_change = False
+            leaf_change = False
         if time<=0 and fall==False:
             fall = True
             del platforms[0]
@@ -424,8 +425,11 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
         pygame.draw.rect(screen, (212,246,254), (size[0]//2-bar_size[0]//2 - 2, 110 - 2, bar_size[0]+4, bar_size[1]+4))
         pygame.draw.rect(screen, (47,109,246), bar_rect)
         pygame.draw.rect(screen, (249,229,106), (size[0]//2-bar_size[0]//2 + 1, 110 + 1, width, bar_size[1]-2))
-        if change == True:
-            screen.blit(mushroom,(370,20))
+        if mushroom_change == True or leaf_change == True:
+            if mushroom_change == True:
+                screen.blit(mushroom,(370,20))
+            elif leaf_change == True:
+                screen.blit(leaf,(370,20))
             bar_mushroom_rect = pygame.Rect(4*size[0]//5-bar_size[0]//2+50, 60, bar_mushroom[0], bar_mushroom[1])
             pygame.draw.rect(screen, (118,200,250), (4*size[0]//5-bar_size[0]//2 + 50 - 3, 60 - 3, bar_mushroom[0]+6, bar_mushroom[1]+6))
             pygame.draw.rect(screen, (212,246,254), (4*size[0]//5-bar_size[0]//2 + 50 - 2, 60 - 2, bar_mushroom[0]+4, bar_mushroom[1]+4))
