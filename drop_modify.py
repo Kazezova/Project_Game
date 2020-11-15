@@ -77,7 +77,7 @@ py_enemy = [(pygame.image.load(i), i) for i in enemy_images]
 
 pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=512)
 music = pygame.mixer.Sound('main.wav')
-music.set_volume(0.1)
+music.set_volume(0.3)
 star_sound = pygame.mixer.Sound("star.wav")
 trick_sound = pygame.mixer.Sound("trick.wav")
 ball_sound = pygame.mixer.Sound("ball.wav")
@@ -442,6 +442,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
         if time<=0 and fall==False:
             fall = True
             del platforms[0]
+            pygame.mixer.Sound.play(drop_sound)
             my_pix.fall()
             camera_fall = True
             c = c - 40
