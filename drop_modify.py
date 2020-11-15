@@ -11,10 +11,11 @@ if  cur.execute('SELECT id FROM User') == None:
 
 
 character_id = cur.execute('SELECT character_id FROM User').fetchone()[0]
-character = cur.execute('SELECT name, image, cost FROM Character WHERE id= ?', (character_id,)).fetchone()
+character = cur.execute('SELECT name, image, image_big, cost FROM Character WHERE id= ?', (character_id,)).fetchone()
 character_name = character[0]
 character_image = character[1]
-character_cost = character[2]
+character_image_big = character[2]
+character_cost = character[3]
 
 user_stars = cur.execute('SELECT stars FROM User').fetchone()[0]
 user_best_score = cur.execute('SELECT best_score FROM User').fetchone()[0]
@@ -214,7 +215,7 @@ def background(user_stars):
 
 def menu(): 
     pix_Img = pygame.image.load(character_image)
-    pix_Img_big = pygame.image.load("pix64.png")
+    pix_Img_big = pygame.image.load(character_image_big)
     start_btn = pygame.image.load("play_btn.png")
     x = 0
     dx = 1
@@ -258,7 +259,7 @@ def menu():
         pygame.display.flip()
         clock.tick(fps)
 
-def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False):
+def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls=[]):
     global user_best_score, user_stars
     pix_X = 100
     pix_Y = 0
@@ -284,7 +285,6 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False):
     coefficient_m = max_width_m / time_m
     dt = 0
     start_c = False
-    balls = []
     while running:
         click = False
         background(user_stars)
@@ -351,7 +351,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False):
             cur.execute('UPDATE User SET stars = (?)', (user_stars,))
             conn.commit()
             if user_stars>=100:
-                continue_game(pix_Img, pix_Img_big, user_score, platforms, enemys)
+                continue_game(pix_Img, pix_Img_big, user_score, platforms, enemys, balls)
             else:
                 restart(pix_Img, pix_Img_big, user_score)
             running = False
@@ -539,7 +539,7 @@ def restart(pix, pix_Img_big, score):
         pygame.display.flip()
         clock.tick(fps)
 
-def continue_game(pix, pix_Img_big, score, platforms, enemys):
+def continue_game(pix, pix_Img_big, score, platforms, enemys, balls):
     global user_best_score, user_stars
     running = True
     while running:
@@ -574,7 +574,7 @@ def continue_game(pix, pix_Img_big, score, platforms, enemys):
                 conn.commit()
                 platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
                 enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
-                game(pix, pix_Img_big, score, platforms, enemys, True)
+                game(pix, pix_Img_big, score, platforms, enemys, True, balls)
                 running = False
         elif not_cont_btn.collidepoint((mx, my)):
             if click:
