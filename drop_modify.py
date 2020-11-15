@@ -258,7 +258,7 @@ def menu():
         pygame.display.flip()
         clock.tick(fps)
 
-def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
+def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False):
     global user_best_score, user_stars
     pix_X = 100
     pix_Y = 0
@@ -283,7 +283,6 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
     coefficient = max_width / time
     coefficient_m = max_width_m / time_m
     dt = 0
-    start = False
     start_c = False
     balls = []
     while running:
@@ -387,6 +386,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
         bomb_btn = pygame.Rect(20, size[1]-bomb_img.get_height()-70, bomb_img.get_width(),  bomb_img.get_height())
         if start_c == False:
             click = False
+            my_pix.image = pix_Img
         if click:
             if bomb_btn.collidepoint((mx,my)) and user_stars>=10:
                 user_stars -= 10
@@ -403,7 +403,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
                 camera_fall = True
                 c = c - 40
         
-        if time_m<=0 and fall==False:
+        if time_m<=0 and change==True:
             my_pix = Pix(my_pix.x, my_pix.y, pix_Img)
             change = False
 
@@ -443,7 +443,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
         if len(balls)>3:
             balls.pop(0)
         if len(balls) == 3 and len(set(balls)) == 1:
-            bonus_raund(pix_Img, user_score-1, balls[0])
+            bonus_raund(pix_Img, pix_Img_big, user_score-1, balls[0])
             running = False
         for i in range(3):
             try:
@@ -464,6 +464,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys):
 
 def update_platform(platforms, enemys):
     spec_case = rand(0,15)
+    spec_case = 5
     if 'long' in enemys[0].picname:
         image = py_platform[0]
     elif 'short' in enemys[0].picname:
@@ -574,7 +575,7 @@ def continue_game(pix, pix_Img_big, score, platforms, enemys):
                 conn.commit()
                 platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
                 enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
-                game(pix, pix_Img_big, score, platforms, enemys)
+                game(pix, pix_Img_big, score, platforms, enemys, True)
                 running = False
         elif not_cont_btn.collidepoint((mx, my)):
             if click:
@@ -594,9 +595,9 @@ def continue_game(pix, pix_Img_big, score, platforms, enemys):
         pygame.display.flip()
         clock.tick(fps)
 
-def bonus_raund(pix, user_score, color):
+def bonus_raund(pix, pix_big, user_score, color):
     global user_stars
-    my_pix = Pix((size[0]//2)-(pix.get_width()//2), 0, pix)
+    my_pix = Pix((size[0]//2)-(pix_big.get_width()//2), 0, pix_big)
     running = True
     camera_fall = False
     c = 0
@@ -679,7 +680,7 @@ def bonus_raund(pix, user_score, color):
             conn.commit()
             platforms = [Platform(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
             enemys = [Enemy(data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2,5)]
-            game(pix, user_score, platforms, enemys, True)
+            game(pix, pix_big, user_score, platforms, enemys, True)
             running = False
 
         if camera_fall:
