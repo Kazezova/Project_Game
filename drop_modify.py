@@ -501,7 +501,6 @@ def update_platform(platforms, enemys):
         image = py_platform[0]
     elif 'short' in enemys[0].picname:
         image = py_platform[1]
-    spec_case = 7
     if spec_case == 1:
         choose = "leaf"
     elif spec_case == 2:
