@@ -4,18 +4,20 @@ from random import randint as rand
 import sqlite3
 
 conn = sqlite3.connect('dropDB.sqlite')
+conn.row_factory = sqlite3.Row
 cur = conn.cursor()
 if  cur.execute('SELECT id FROM User') == None:
     cur.execute('INSERT OR IGNORE INTO User (character_id, stars, best_score) VALUES (1,0,0)')
     print('he')
 
+all_characters = [dict(row) for row in cur.execute('SELECT * FROM Character').fetchall()]
 
 character_id = cur.execute('SELECT character_id FROM User').fetchone()[0]
-character = cur.execute('SELECT name, image, image_big, cost FROM Character WHERE id= ?', (character_id,)).fetchone()
-character_name = character[0]
-character_image = character[1]
-character_image_big = character[2]
-character_cost = character[3]
+# character = cur.execute('SELECT name, image, image_big, cost FROM Character WHERE id= ?', (character_id,)).fetchone()
+# character_name = character[0]
+# character_image = character[1]
+# character_image_big = character[2]
+# character_cost = character[3]
 
 user_stars = cur.execute('SELECT stars FROM User').fetchone()[0]
 user_best_score = cur.execute('SELECT best_score FROM User').fetchone()[0]
@@ -74,6 +76,15 @@ py_platform = [(pygame.image.load(i), i) for i in platform_images]
 py_enemy = [(pygame.image.load(i), i) for i in enemy_images]
 # dead_pix = pygame.image.load("pix_kill100.png")
 # dead_pix = pygame.transform.scale(dead_pix, (32,32))
+
+skin_back_img = pygame.image.load("change_skin_back.png")
+skin_btn_img = pygame.image.load("skin_btn.png")
+skin_right_img = pygame.image.load("right.png")
+skin_left_img = pygame.image.load("left.png")
+selected = pygame.image.load("s_selected.png")
+choose = pygame.image.load("s_choose.png")
+buy = pygame.image.load("s_buy.png")
+cant_buy = pygame.image.load("cant_buy.png")
 
 pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=512)
 music = pygame.mixer.Sound('main.wav')
@@ -228,9 +239,9 @@ def background(user_stars):
     screen.blit(pygame.transform.scale(star,(28,28)), (10,10))
     screen.blit(star_font.render(f"{user_stars}", False, (255,132,37)), (40, 8))
 
-def menu(): 
-    pix_Img = pygame.image.load(character_image)
-    pix_Img_big = pygame.image.load(character_image_big)
+def menu(id): 
+    pix_Img = pygame.image.load(all_characters[id-1]["image"])
+    pix_Img_big = pygame.image.load(all_characters[id-1]["image_big"])
     start_btn = pygame.image.load("play_btn.png")
     x = 0
     dx = 1
@@ -244,6 +255,9 @@ def menu():
                             start_btn.get_width(), 
                             start_btn.get_height()
                             )
+        skin_btn = pygame.Rect(size[0]//2-skin_btn_img.get_width()//2, size[1]//3 + 250, 
+                            skin_btn_img.get_width(), 
+                            skin_btn_img.get_height())
         click = False
 
         for event in pygame.event.get():
@@ -262,6 +276,10 @@ def menu():
                 pygame.mixer.Sound.play(start_sound)
                 game(pix_Img, pix_Img_big, 0, platforms, enemys, False, [])
                 running = False
+        if skin_btn.collidepoint((mx, my)):
+            if click:
+                change_skin(id)
+                running = False
         x += dx
         if x <= -25 or x >= 25:
             dx *= -1
@@ -272,6 +290,102 @@ def menu():
         (size[0]//2- best_score.get_width()//2 + x , size[1]//3 - best_score_img.get_height()))
         screen.blit(pix_Img, (size[0]//2-pix_Img.get_width()//2 + x , size[1]//3))
         screen.blit(start_btn, (size[0]//2-start_btn.get_width()//2 + x, size[1]//3 + pix_Img.get_height()))
+        screen.blit(skin_btn_img, (size[0]//2-skin_btn_img.get_width()//2, size[1]//3 + 250))
+        pygame.display.flip()
+        clock.tick(fps)
+
+def change_skin(id):
+    global user_stars
+    running = True
+    k = 0
+    while running:
+        background(user_stars)
+        mx, my = pygame.mouse.get_pos()
+        back_size = (size[0]//2-skin_back_img.get_width()//2, size[1]//2 - skin_back_img.get_height()//2 - 50)
+
+        right_btn = pygame.Rect(back_size[0]+skin_back_img.get_width()-skin_right_img.get_width(), 
+                            back_size[1]+skin_back_img.get_height()//2-skin_right_img.get_height()//2,
+                            skin_right_img.get_width(), 
+                            skin_right_img.get_height())
+        left_btn = pygame.Rect(back_size[0], 
+                            back_size[1]+skin_back_img.get_height()//2-skin_left_img.get_height()//2,
+                            skin_right_img.get_width(), 
+                            skin_right_img.get_height())
+        act_btn = pygame.Rect(size[0]//2-selected.get_width()//2, back_size[1] + 225,
+                            selected.get_width(), 
+                            selected.get_height())
+        
+        exit_btn = pygame.Rect(size[0]//2-not_cont_img.get_width()//2, size[1]//2+cont.get_height()//2 - 40,
+                            not_cont_img.get_width(), 
+                            not_cont_img.get_height())
+        click = False
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                cur.close()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+        if right_btn.collidepoint((mx, my)):
+            if click:
+                if k < len(all_characters)-1 :
+                    k += 1
+        elif left_btn.collidepoint((mx, my)):
+            if click:
+                if k > 0:
+                    k -=1
+            
+        skin = all_characters[k]
+
+        if act_btn.collidepoint((mx, my)):
+            if click:
+                if skin["cost"] == 0 and skin["id"] == id:
+                    pass
+                elif skin["cost"] == 0 and skin["id"] != id:
+                    id = skin["id"]
+                    cur.execute('UPDATE User SET character_id = (?)', (id,))
+                    conn.commit()
+                else:
+                    if user_stars >= skin["cost"]:
+                        user_stars -= skin["cost"]
+                        id = skin["id"]
+                        skin["cost"] = 0
+                        cur.execute('UPDATE User SET character_id = (?)', (id,))
+                        cur.execute('UPDATE User SET stars = (?)', (user_stars,))
+                        cur.execute('UPDATE Character SET cost = (?) WHERE id = (?)', (0, id))
+                        conn.commit()
+                    else:
+                        pass
+        if exit_btn.collidepoint((mx, my)):
+            if click:
+                menu(id)
+
+        s = pygame.Surface((size[0],size[1]), pygame.SRCALPHA)   
+        s.fill((0,0,0,32)) 
+        screen.blit(s, (0,0))
+        screen.blit(skin_back_img, back_size)
+        screen.blit(skin_left_img, (back_size[0], back_size[1]+skin_back_img.get_height()//2-skin_left_img.get_height()//2))
+        screen.blit(skin_right_img, (back_size[0]+skin_back_img.get_width()-skin_right_img.get_width(), back_size[1]+skin_back_img.get_height()//2-skin_right_img.get_height()//2))
+        skin_name = star_font.render(f"{skin['name']}", False, (255,132,37))
+        screen.blit(skin_name, (size[0]//2-skin_name.get_width()//2, back_size[1] + 20))
+        skin_img = pygame.image.load(skin['image_big'])
+        screen.blit(skin_img, (size[0]//2-skin_img.get_width()//2, back_size[1] + 100))
+        if skin["cost"] == 0:
+            screen.blit(py_platform[1][0], (size[0]//2-py_platform[1][0].get_width()//2, back_size[1] + 100 + skin_img.get_height()))
+            if id == skin["id"]:
+                screen.blit(selected, (size[0]//2-selected.get_width()//2, back_size[1] + 225))
+            else:
+                screen.blit(choose, (size[0]//2-choose.get_width()//2, back_size[1] + 225))
+        else:
+            screen.blit(py_enemy[1][0], (size[0]//2-py_platform[1][0].get_width()//2, back_size[1] + 80 + skin_img.get_height()))
+            if user_stars >= skin["cost"]:
+                screen.blit(buy, (size[0]//2-buy.get_width()//2, back_size[1] + 225))
+            else:
+                screen.blit(cant_buy, (size[0]//2-cant_buy.get_width()//2, back_size[1] + 225))
+        screen.blit(not_cont_img, (size[0]//2-not_cont_img.get_width()//2, size[1]//2+cont.get_height()//2 - 40))
+    
         pygame.display.flip()
         clock.tick(fps)
 
@@ -393,7 +507,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    menu()
+                    menu(cur.execute('SELECT character_id FROM User').fetchone()[0])
                     running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -419,14 +533,15 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
             my_pix.image = pix_Img
         if click:
             if bomb_btn.collidepoint((mx,my)) and user_stars>=10:
-                user_stars -= 10
-                del platforms[-1]
-                pygame.mixer.Sound.play(drop_sound)
-                update_platform(platforms, enemys)
-                camera_fall = True
-                bomb = True
-                c = c - 40
-                time = 10
+                if my_pix.collide(platforms[0]) and camera_fall==False:
+                    user_stars -= 10
+                    del platforms[-1]
+                    pygame.mixer.Sound.play(drop_sound)
+                    update_platform(platforms, enemys)
+                    camera_fall = True
+                    bomb = True
+                    c = c - 40
+                    time = 10
             else:
                 fall = True
                 del platforms[0]
@@ -562,7 +677,7 @@ def restart(pix, pix_Img_big, score):
         if home_btn.collidepoint((mx, my)):
             if click:
                 pygame.mixer.Sound.play(start_sound)
-                menu()
+                menu(cur.execute('SELECT character_id FROM User').fetchone()[0])
                 running = False
         score_f = star_font.render(f"score", False, (47,109,246))
         user_score = font.render(f"{score}", False, (47,109,246))
@@ -702,7 +817,7 @@ def bonus_raund(pix, pix_big, user_score, color):
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    menu()
+                    menu(cur.execute('SELECT character_id FROM User').fetchone()[0])
                     running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -757,6 +872,6 @@ def bonus_raund(pix, pix_big, user_score, color):
         pygame.display.flip()
         dt = clock.tick(fps)/500
 
-menu()
+menu(character_id)
 pygame.quit()
 cur.close()
