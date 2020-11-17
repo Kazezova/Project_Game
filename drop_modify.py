@@ -13,11 +13,6 @@ if  cur.execute('SELECT id FROM User') == None:
 all_characters = [dict(row) for row in cur.execute('SELECT * FROM Character').fetchall()]
 
 character_id = cur.execute('SELECT character_id FROM User').fetchone()[0]
-# character = cur.execute('SELECT name, image, image_big, cost FROM Character WHERE id= ?', (character_id,)).fetchone()
-# character_name = character[0]
-# character_image = character[1]
-# character_image_big = character[2]
-# character_cost = character[3]
 
 user_stars = cur.execute('SELECT stars FROM User').fetchone()[0]
 user_best_score = cur.execute('SELECT best_score FROM User').fetchone()[0]
@@ -361,6 +356,7 @@ def change_skin(id):
         if exit_btn.collidepoint((mx, my)):
             if click:
                 menu(id)
+                running = False
 
         s = pygame.Surface((size[0],size[1]), pygame.SRCALPHA)   
         s.fill((0,0,0,32)) 
