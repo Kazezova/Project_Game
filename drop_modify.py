@@ -87,7 +87,7 @@ buy_platform = pygame.image.load("platform_unselected.png")
 
 pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=512)
 music = pygame.mixer.Sound('main.wav')
-music.set_volume(0.3)
+music.set_volume(0.2)
 star_sound = pygame.mixer.Sound("star.wav")
 trick_sound = pygame.mixer.Sound("trick.wav")
 ball_sound = pygame.mixer.Sound("ball.wav")
@@ -98,6 +98,7 @@ dead_sound = pygame.mixer.Sound("dead.wav")
 restart_sound = pygame.mixer.Sound("restart.wav")
 bonus_sound = pygame.mixer.Sound("bonus.wav")
 bonus_star_sound = pygame.mixer.Sound("bonus_star.wav")
+press_sound = pygame.mixer.Sound("press.wav")
 music.play(-1)
 # platfroms
 itn = (0, 200)
@@ -297,6 +298,7 @@ def menu(id):
                 running = False
         if skin_btn.collidepoint((mx, my)):
             if click:
+                pygame.mixer.Sound.play(press_sound)
                 change_skin(id)
                 running = False
         x += dx
@@ -372,11 +374,13 @@ def change_skin(id):
                 if skin["cost"] == 0 and skin["id"] == id:
                     pass
                 elif skin["cost"] == 0 and skin["id"] != id:
+                    pygame.mixer.Sound.play(press_sound)
                     id = skin["id"]
                     cur.execute('UPDATE User SET character_id = (?)', (id,))
                     conn.commit()
                 else:
                     if user_stars >= skin["cost"]:
+                        pygame.mixer.Sound.play(press_sound)
                         user_stars -= skin["cost"]
                         id = skin["id"]
                         skin["cost"] = 0
@@ -391,6 +395,7 @@ def change_skin(id):
                         pass
         if exit_btn.collidepoint((mx, my)):
             if click:
+                pygame.mixer.Sound.play(press_sound)
                 menu(id)
                 running = False
 
@@ -737,6 +742,7 @@ def restart(pix, pix_Img_big, score):
                     data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
                 enemys = [Enemy(data[i][0], data[i][1], data[i]
                                 [2][0], data[i][2][1]) for i in range(2, 5)]
+                pygame.mixer.Sound.stop(restart_sound)
                 pygame.mixer.Sound.play(start_sound)
                 game(pix, pix_Img_big, 0, platforms, enemys, False, [])
                 running = False
