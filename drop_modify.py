@@ -72,14 +72,15 @@ py_enemy = [(pygame.image.load(i), i) for i in enemy_images]
 # dead_pix = pygame.image.load("pix_kill100.png")
 # dead_pix = pygame.transform.scale(dead_pix, (32,32))
 
-skin_back_img = pygame.image.load("change_skin_back.png")
+skin_back_img = pygame.image.load("page_skins.png")
 skin_btn_img = pygame.image.load("skin_btn.png")
 skin_right_img = pygame.image.load("right.png")
 skin_left_img = pygame.image.load("left.png")
-selected = pygame.image.load("s_selected.png")
-choose = pygame.image.load("s_choose.png")
-buy = pygame.image.load("s_buy.png")
+selected = pygame.image.load("btn_selected.png")
+choose = pygame.image.load("btn_select.png")
+buy = pygame.image.load("btn1000.png")
 cant_buy = pygame.image.load("cant_buy.png")
+buy_platform = pygame.image.load("platform_unselected.png")
 
 pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=512)
 music = pygame.mixer.Sound('main.wav')
@@ -375,7 +376,7 @@ def change_skin(id):
             else:
                 screen.blit(choose, (size[0]//2-choose.get_width()//2, back_size[1] + 225))
         else:
-            screen.blit(py_enemy[1][0], (size[0]//2-py_platform[1][0].get_width()//2, back_size[1] + 80 + skin_img.get_height()))
+            screen.blit(buy_platform, (size[0]//2-buy_platform.get_width()//2, back_size[1] + 100 + skin_img.get_height()))
             if user_stars >= skin["cost"]:
                 screen.blit(buy, (size[0]//2-buy.get_width()//2, back_size[1] + 225))
             else:
