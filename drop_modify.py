@@ -111,6 +111,10 @@ data = [
     [rand(0, itn[1]), itn[1]+dst*4, py_enemy[rand(0, len(py_enemy)-1)]]
 ]
 
+
+# color
+RED = (255, 0, 0)
+pix_dead_img = pygame.image.load("pix_kill32.png")
 # cloud
 cloud_x = 400
 cloud_dx = -1
@@ -142,13 +146,35 @@ class Pix:
         if smth.special:
             if smth.x >= size[0]+smth.width or smth.x <= -smth.width:
                 self.x = smth.x + Pix.dif
-        if self.y+self.height+20 >= smth.y and (smth.x < self.x+self.width//2 and self.x+self.width//2 < smth.x+smth.width):
-            smth.opacity = 0
-            Pix.dif = self.x - smth.x
-            Pix.dy = 0
-            self.y = smth.y - self.height
-            self.x += smth.dx
-            return True
+        if self.x + self.width//2 >= smth.x and self.x + self.width//2 <= smth.x + smth.width:
+            if self.y+self.height >= smth.y and self.y <= smth.y + smth.height:
+                smth.opacity = 0
+                Pix.dif = self.x - smth.x
+                Pix.dy = 0
+                self.y = smth.y - self.height
+                self.x += smth.dx
+                return True
+        return False
+
+    def col_left(self, smth):
+        half_pix_x = self.width//2
+        if self.x+half_pix_x <= smth.x and self.x + self.width >= smth.x:
+            if self.y+self.height >= smth.y and self.y <= smth.y + smth.height:
+                return True
+        return False
+
+    def col_right(self, smth):
+        half_pix_x = self.width//2
+        if self.x + half_pix_x >= smth.x + smth.width and self.x <= smth.x + smth.width:
+            if self.y+self.height >= smth.y and self.y <= smth.y + smth.height:
+                return True
+        return False
+
+    def collide_enemy(self, smth):
+        half_pix_x = self.width//2
+        if self.x + half_pix_x <= smth.x + smth.width and self.x + half_pix_x >= smth.x:
+            if self.y + self.height >= smth.y and self.y <= smth.y + smth.height:
+                return True
         return False
 
 
@@ -423,7 +449,8 @@ def change_skin(id):
                 screen.blit(
                     choose, (size[0]//2-choose.get_width()//2, back_size[1] + 225))
         else:
-            screen.blit(buy_platform, (size[0]//2-buy_platform.get_width()//2, back_size[1] + 100 + skin_img.get_height()))
+            screen.blit(buy_platform, (size[0]//2-buy_platform.get_width() //
+                                       2, back_size[1] + 100 + skin_img.get_height()))
             if user_stars >= skin["cost"]:
                 screen.blit(
                     buy, (size[0]//2-buy.get_width()//2, back_size[1] + 225))
@@ -465,14 +492,102 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
     dt = 0
     start_c = False
     temp = 0
+
+    col_r, col_l = False, False
+    spin = 0
+    rot = False
+    col_dead = False
+    dead = False
+    dead_cnt = 0
+    dead_snd_was = False
     while running:
         click = False
         background(user_stars)
-        col = my_pix.collide(platforms[0])
-        if col == False:
-            my_pix.draw((my_pix.width, my_pix.height+20))
+        if not rot:
+            col = my_pix.collide(platforms[0])
+
+        if my_pix.col_right(platforms[0]):
+            col_r = True
+            rot = True
+            dead = True
+            if not dead_snd_was:
+                dead_snd_was = True
+                pygame.mixer.Sound.play(dead_sound)
+        if my_pix.col_left(platforms[0]):
+            col_l = True
+            rot = True
+            dead = True
+            if not dead_snd_was:
+                dead_snd_was = True
+                pygame.mixer.Sound.play(dead_sound)
+
+        for i in range(len(enemys)):
+            if my_pix.col_right(enemys[i]):
+                col_r = True
+                rot = True
+                dead = True
+                if not dead_snd_was:
+                    dead_snd_was = True
+                    pygame.mixer.Sound.play(dead_sound)
+            if my_pix.col_left(enemys[i]):
+                col_l = True
+                rot = True
+                dead = True
+                if not dead_snd_was:
+                    dead_snd_was = True
+                    pygame.mixer.Sound.play(dead_sound)
+
+        if col_r:
+            spin += -4
+            my_pix.x += 4
+            my_pix.y += 6
+            my_pix.image = pygame.transform.rotate(pix_dead_img, spin)
+        if col_l:
+            spin += +4
+            my_pix.x -= 4
+            my_pix.y += 6
+            my_pix.image = pygame.transform.rotate(pix_dead_img, spin)
+
+        for i in range(len(enemys)):
+            if my_pix.collide_enemy(enemys[i]) and not rot and not dead:
+                col_dead = True
+                col_enemy = enemys[i]
+                my_pix.image = pygame.transform.scale(pix_dead_img, (32, 24))
+                dead = True
+                pygame.mixer.Sound.play(dead_sound)
+        if col_dead:
+            my_pix.y = col_enemy.y-my_pix.height + 12
+            my_pix.x += col_enemy.dx
+
+        if my_pix.y > 700:
+            dead = True
+            dead_cnt = 60
+            if not dead_snd_was:
+                dead_snd_was = True
+                pygame.mixer.Sound.play(dead_sound)
+
+        if dead:
+            dead_cnt += 1
+            if dead_cnt >= 60:
+                if user_score > user_best_score:
+                    user_best_score = user_score
+                    cur.execute('UPDATE User SET best_score = (?)',
+                                (user_best_score,))
+                cur.execute('UPDATE User SET stars = (?)', (user_stars,))
+                conn.commit()
+                if user_stars >= 100:
+                    continue_game(pix_Img, pix_Img_big,
+                                  user_score, platforms, enemys, balls)
+                else:
+                    pygame.mixer.Sound.play(restart_sound)
+                    restart(pix_Img, pix_Img_big, user_score)
+                running = False
+        screen.blit(bord.render(f"{dead_cnt}", False, RED), (50, 50))
+
+        if col == False and not rot:
+            my_pix.draw()
             my_pix.fall()
-        elif col == True and fall == True:
+        elif col == True and fall == True and not rot:
             if platforms[0].trick_name == "star":
                 user_stars += 1
                 pygame.mixer.Sound.play(star_sound)
@@ -532,24 +647,6 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                 enemys[i].draw()
             else:
                 enemys[i].draw_alpha()
-
-        if my_pix.y > platforms[0].y + platforms[0].height and col == False:
-            # if my_pix.collide(enemys[0]) or my_pix.collide(enemys[1]) or my_pix.collide(enemys[2]):
-            #     my_pix.image = dead_pix
-            pygame.mixer.Sound.play(dead_sound)
-            if user_score > user_best_score:
-                user_best_score = user_score
-                cur.execute('UPDATE User SET best_score = (?)',
-                            (user_best_score,))
-            cur.execute('UPDATE User SET stars = (?)', (user_stars,))
-            conn.commit()
-            if user_stars >= 100:
-                continue_game(pix_Img, pix_Img_big, user_score,
-                              platforms, enemys, balls)
-            else:
-                pygame.mixer.Sound.play(restart_sound)
-                restart(pix_Img, pix_Img_big, user_score)
-            running = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
