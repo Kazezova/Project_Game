@@ -582,10 +582,9 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                     pygame.mixer.Sound.play(restart_sound)
                     restart(pix_Img, pix_Img_big, user_score)
                 running = False
-        screen.blit(bord.render(f"{dead_cnt}", False, RED), (50, 50))
 
         if col == False and not rot:
-            my_pix.draw()
+            my_pix.draw(size=(my_pix.width, my_pix.height + 16))
             my_pix.fall()
         elif col == True and fall == True and not rot:
             if platforms[0].trick_name == "star":
