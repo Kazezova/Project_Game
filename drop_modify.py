@@ -583,7 +583,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                     restart(pix_Img, pix_Img_big, user_score)
                 running = False
 
-        if col == False and not rot:
+        if col == False and not dead:
             my_pix.draw(size=(my_pix.width, my_pix.height + 16))
             my_pix.fall()
         elif col == True and fall == True and not rot:
