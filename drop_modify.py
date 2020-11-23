@@ -21,8 +21,8 @@ user_best_score = cur.execute('SELECT best_score FROM User').fetchone()[0]
 
 pygame.init()
 # game branding
-pygame.display.set_caption("Drop'd")
-icon = pygame.transform.scale(pygame.image.load("pix.png"), (32, 32))
+pygame.display.set_caption("Pix Drop")
+icon = pygame.transform.scale(pygame.image.load("images/pix.png"), (32, 32))
 pygame.display.set_icon(icon)
 font = pygame.font.Font('Jesus_Heals.ttf', 60)
 bord = pygame.font.Font('Jesus_Lives.ttf', 60)
@@ -38,68 +38,67 @@ cloud_dx = -1
 camera_y = 0
 
 # images
-back_img = pygame.image.load("angryimg.png")
-cloud_img = pygame.image.load("cloud.png")
-opp = pygame.image.load("download.png")
-cont = pygame.image.load("cont.png")
-cont_btn_img = pygame.image.load("btn100.png")
-not_cont_img = pygame.image.load("btn_cancel_1.png")
-restart_btn_img = pygame.image.load("restart_btn.png")
-best_score_img = pygame.image.load("best_score.png")
-star = pygame.image.load("star32.png")
-leaf = pygame.image.load("leaf32.png")
-mushroom = pygame.image.load("mushroom32.png")
-carrot = pygame.image.load("carrot32.png")
-home = pygame.image.load("home.png")
-bomb_img = pygame.image.load("bomb.png")
+back_img = pygame.image.load("images/angryimg.png")
+cloud_img = pygame.image.load("images/cloud.png")
+opp = pygame.image.load("images/download.png")
+cont = pygame.image.load("images/cont.png")
+cont_btn_img = pygame.image.load("images/btn100.png")
+not_cont_img = pygame.image.load("images/btn_cancel_1.png")
+restart_btn_img = pygame.image.load("images/restart_btn.png")
+best_score_img = pygame.image.load("images/best_score.png")
+star = pygame.image.load("images/star32.png")
+leaf = pygame.image.load("images/leaf32.png")
+mushroom = pygame.image.load("images/mushroom32.png")
+carrot = pygame.image.load("images/carrot32.png")
+home = pygame.image.load("images/home.png")
+bomb_img = pygame.image.load("images/bomb.png")
 
-ball_green = pygame.image.load("ball_green.png")
-ball_pink = pygame.image.load("ball_pink.png")
-ball_violet = pygame.image.load("ball_violet.png")
-ball_yellow = pygame.image.load("ball_yellow.png")
+ball_green = pygame.image.load("images/ball_green.png")
+ball_pink = pygame.image.load("images/ball_pink.png")
+ball_violet = pygame.image.load("images/ball_violet.png")
+ball_yellow = pygame.image.load("images/ball_yellow.png")
 trick = {"star": star, "leaf": leaf, "mushroom": mushroom, "carrot": carrot,
          "green": pygame.transform.scale(ball_green, (24, 24)), "pink": pygame.transform.scale(ball_pink, (24, 24)),
          "violet": pygame.transform.scale(ball_violet, (24, 24)), "yellow": pygame.transform.scale(ball_yellow, (24, 24))}
 
-bonus_platform = pygame.image.load("platform_very_long.png")
-bonus_kill = pygame.image.load("platform_very_long_kill.png")
-bonus_enemy = pygame.image.load("kill_long.png")
+bonus_platform = pygame.image.load("images/platform_very_long.png")
+bonus_kill = pygame.image.load("images/platform_very_long_kill.png")
+bonus_enemy = pygame.image.load("images/kill_long.png")
 bonus_enemy = pygame.transform.scale(
     bonus_enemy, (size[0], bonus_enemy.get_height()))
-star_rainbow = pygame.image.load("star_rainbow.png")
+star_rainbow = pygame.image.load("images/star_rainbow.png")
 
-platform_images = ["platform_long.png", "platform_short.png"]
-enemy_images = ["kill_long.png", "kill_short.png"]
+platform_images = ["images/platform_long.png", "images/platform_short.png"]
+enemy_images = ["images/kill_long.png", "images/kill_short.png"]
 py_platform = [(pygame.image.load(i), i) for i in platform_images]
 py_enemy = [(pygame.image.load(i), i) for i in enemy_images]
 # dead_pix = pygame.image.load("pix_kill100.png")
 # dead_pix = pygame.transform.scale(dead_pix, (32,32))
 
-skin_back_img = pygame.image.load("page_skins.png")
-skin_btn_img = pygame.image.load("skin_btn.png")
-skin_right_img = pygame.image.load("right.png")
-skin_left_img = pygame.image.load("left.png")
-selected = pygame.image.load("btn_selected.png")
-choose = pygame.image.load("btn_select.png")
-buy = pygame.image.load("btn1000.png")
-cant_buy = pygame.image.load("cant_buy.png")
-buy_platform = pygame.image.load("platform_unselected.png")
-rainbow = pygame.image.load("rainbow.png")
+skin_back_img = pygame.image.load("images/page_skins.png")
+skin_btn_img = pygame.image.load("images/skin_btn.png")
+skin_right_img = pygame.image.load("images/right.png")
+skin_left_img = pygame.image.load("images/left.png")
+selected = pygame.image.load("images/btn_selected.png")
+choose = pygame.image.load("images/btn_select.png")
+buy = pygame.image.load("images/btn1000.png")
+cant_buy = pygame.image.load("images/cant_buy.png")
+buy_platform = pygame.image.load("images/platform_unselected.png")
 
 pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=512)
-music = pygame.mixer.Sound('main.wav')
+music = pygame.mixer.Sound('sound/main.wav')
 music.set_volume(0.2)
-star_sound = pygame.mixer.Sound("star.wav")
-trick_sound = pygame.mixer.Sound("trick.wav")
-ball_sound = pygame.mixer.Sound("ball.wav")
-drop_sound = pygame.mixer.Sound("del_platform.wav")
-start_sound = pygame.mixer.Sound("start.wav")
-fall_sound = pygame.mixer.Sound("fall.wav")
-dead_sound = pygame.mixer.Sound("dead.wav")
-restart_sound = pygame.mixer.Sound("restart.wav")
-bonus_sound = pygame.mixer.Sound("bonus.wav")
-bonus_star_sound = pygame.mixer.Sound("bonus_star.wav")
-press_sound = pygame.mixer.Sound("press.wav")
+star_sound = pygame.mixer.Sound("sound/star.wav")
+trick_sound = pygame.mixer.Sound("sound/trick.wav")
+ball_sound = pygame.mixer.Sound("sound/ball.wav")
+drop_sound = pygame.mixer.Sound("sound/del_platform.wav")
+start_sound = pygame.mixer.Sound("sound/start.wav")
+fall_sound = pygame.mixer.Sound("sound/fall.wav")
+dead_sound = pygame.mixer.Sound("sound/dead.wav")
+restart_sound = pygame.mixer.Sound("sound/restart.wav")
+bonus_sound = pygame.mixer.Sound("sound/bonus.wav")
+bonus_star_sound = pygame.mixer.Sound("sound/bonus_star.wav")
+press_sound = pygame.mixer.Sound("sound/press.wav")
 music.play(-1)
 # platfroms
 itn = (0, 200)
@@ -113,11 +112,12 @@ data = [
 ]
 
 
-# colors
-WHITE = (255, 255, 255)
-BLUE = (47, 109, 246)
+# color
 RED = (255, 0, 0)
-pix_dead_img = pygame.image.load("pix_kill32.png")
+pix_dead_img = pygame.image.load("images/pix_kill32.png")
+# cloud
+cloud_x = 400
+cloud_dx = -1
 
 
 class Pix:
@@ -182,7 +182,7 @@ class Platform:
     cnt = 0
     sz = 0
 
-    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, trick=None, trick_name=None):
+    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, trick=None, trick_name=None, move_sharply=False):
         self.image = image
         self.picname = picname
         self.x = x
@@ -195,6 +195,7 @@ class Platform:
         self.alpha = alpha
         self.trick = trick
         self.trick_name = trick_name
+        self.move_sharply = move_sharply
 
     def move(self):
         if self.special:
@@ -206,8 +207,7 @@ class Platform:
             if self.x <= 0:
                 self.dx *= -1
             elif self.x >= size[0]-self.width+2:
-                if self.dx > 0:
-                    self.dx *= -1
+                self.dx *= -1
 
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
@@ -259,28 +259,25 @@ class Platform:
 
 
 class Enemy(Platform):
-    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2):
+    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, move_sharply=False):
         super().__init__(x, y, image, picname, dx, special,
-                         opacity, alpha, None, None)
+                         opacity, alpha, None, None, move_sharply)
 
     def draw_smth(self, smth):
         screen.blit(smth, (self.x+(self.width//2) -
                            smth.get_width()//2, self.y-smth.get_height()-10))
 
 
-cloud_dist = 90
-cloud_list = [[rand(0, 400), cloud_dist*(i+1) + rand(0, 20), rand(1, 2)]
-              for i in range(6)]
-
-
 def background(user_stars):
-    global cloud_list
+    global cloud_x
     screen.blit(back_img, (0, 0))
-    for i in range(len(cloud_list)):
-        screen.blit(opp, (cloud_list[i][0], cloud_list[i][1]))
-        cloud_list[i][0] -= cloud_list[i][2]
-        if cloud_list[i][0] < -50:
-            cloud_list[i][0] = 500
+    if cloud_x + opp.get_width() + 400 < 0:
+        cloud_x = 600
+    cloud_x += -2
+    screen.blit(opp, (cloud_x+200, 100))
+    screen.blit(opp, (cloud_x+50, 50))
+    screen.blit(opp, (cloud_x, 150))
+    screen.blit(opp, (cloud_x-150, 300))
     screen.blit(pygame.transform.scale(star, (28, 28)), (10, 10))
     screen.blit(star_font.render(
         f"{user_stars}", False, (255, 132, 37)), (40, 8))
@@ -472,21 +469,26 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
     pix_X = 100
     pix_Y = 0
     my_pix = Pix(pix_X, pix_Y, pix_Img)
-    platforms[-1].trick = trick["mushroom"]
-    platforms[-1].trick_name = "mushroom"
+    platforms[-1].trick = trick["star"]
+    platforms[-1].trick_name = "star"
     running = True
     fall = False
     camera_fall = False
     bomb = False
+    change = False
     click = False
     c = 0
     bar_size = (100, 8)
+    bar_mushroom = (50, 8)
     bar_rect = pygame.Rect(size[0]//2-bar_size[0] //
                            2, 110, bar_size[0], bar_size[1])
     max_width = bar_size[0]-2
+    max_width_m = bar_mushroom[0]-2
     min_time = 0
     time = 10
+    time_m = 10
     coefficient = max_width / time
+    coefficient_m = max_width_m / time_m
     dt = 0
     start_c = False
     temp = 0
@@ -498,16 +500,11 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
     dead = False
     dead_cnt = 0
     dead_snd_was = False
-
-    iscarrot = False
-    isleaf = False
-    time_step = 6.28/(5*fps)
-
-    bonuses = {}
     clickable = True
     while running:
         click = False
         background(user_stars)
+
         if len(platforms) == 2:
             clickable = True
         else:
@@ -530,7 +527,22 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                 dead_snd_was = True
                 pygame.mixer.Sound.play(dead_sound)
 
-        # dead mechannics
+        for i in range(len(enemys)):
+            if my_pix.col_right(enemys[i]):
+                col_r = True
+                rot = True
+                dead = True
+                if not dead_snd_was:
+                    dead_snd_was = True
+                    pygame.mixer.Sound.play(dead_sound)
+            if my_pix.col_left(enemys[i]):
+                col_l = True
+                rot = True
+                dead = True
+                if not dead_snd_was:
+                    dead_snd_was = True
+                    pygame.mixer.Sound.play(dead_sound)
+
         if col_r:
             spin += -4
             my_pix.x += 4
@@ -582,7 +594,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
             col = True
 
         if col == False and not dead:
-            my_pix.draw(size=(my_pix.width, my_pix.height+16))
+            my_pix.draw(size=(my_pix.width, my_pix.height + 16))
             my_pix.fall()
         elif col == True and fall == True and not rot:
             if platforms[0].trick_name == "star":
@@ -601,16 +613,13 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                 pygame.mixer.Sound.play(ball_sound)
                 balls.append((255, 234, 0))
             elif platforms[0].trick_name == "leaf":
-                isleaf = True
-                bonuses['leaf'] = [6.28, leaf]
                 pygame.mixer.Sound.play(trick_sound)
             elif platforms[0].trick_name == "mushroom":
                 pygame.mixer.Sound.play(trick_sound)
                 my_pix = Pix(my_pix.x, my_pix.y, pix_Img_big)
-                bonuses['mushroom'] = [6.28, mushroom]
+                change = True
+                time_m = 10
             elif platforms[0].trick_name == "carrot":
-                iscarrot = True
-                bonuses['carrot'] = [6.28, carrot]
                 pygame.mixer.Sound.play(trick_sound)
             else:
                 pygame.mixer.Sound.play(fall_sound)
@@ -631,30 +640,9 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
             if start == True:
                 if time > min_time:
                     time -= dt
-
-        # carrot mechanics
-        if iscarrot:
-            for i in range(len(platforms)):
-                platforms[i].image = pygame.transform.scale(
-                    platforms[i].image, (200, platforms[i].height))
-                platforms[i].width = 200
-            for i in range(len(enemys)):
-                enemys[i].image = pygame.transform.scale(
-                    enemys[i].image, (200, enemys[i].height))
-                enemys[i].width = 200
-
-        if isleaf:
-            for i in range(len(platforms)):
-                if platforms[i].dx > 0:
-                    platforms[i].dx = 2
-                if platforms[i].dx < 0:
-                    platforms[i].dx = -2
-            for i in range(len(enemys)):
-                if enemys[i].dx > 0:
-                    enemys[i].dx = 2
-                if enemys[i].dx < 0:
-                    enemys[i].dx = -2
-
+        if change == True:
+            if time_m > min_time:
+                time_m -= dt
         for i in range(len(platforms)):
             platforms[i].move()
             if platforms[i].opacity == 0:
@@ -700,13 +688,17 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                     bomb = True
                     c = c - 40
                     time = 10
-            else:
+            elif clickable:
                 fall = True
                 del platforms[0]
                 pygame.mixer.Sound.play(drop_sound)
                 my_pix.fall()
                 camera_fall = True
                 c = c - 40
+
+        if time_m <= 0 and change == True:
+            my_pix = Pix(my_pix.x, my_pix.y, pix_Img)
+            change = False
 
         if time <= 0 and fall == False:
             fall = True
@@ -731,19 +723,12 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                 camera_fall = False
                 bomb = False
 
-        if user_score < 100:
-            score_txt = font.render(
-                f"{str(user_score).zfill(2)}", False, (255, 255, 255))
-            score_txt_b = bord.render(
-                f"{str(user_score).zfill(2)}", False, (47, 109, 246))
-        else:
-            score_txt = font.render(
-                f"{user_score}", False, (255, 255, 255))
-            score_txt_b = bord.render(
-                f"{user_score}", False, (47, 109, 246))
+        score_txt = font.render(f"{user_score}", False, (255, 255, 255))
+        score_txt_b = bord.render(f"{user_score}", False, (47, 109, 246))
         screen.blit(score_txt, (size[0]//2-score_txt.get_width()//2, 30))
         screen.blit(score_txt_b, (size[0]//2-score_txt_b.get_width()//2, 30))
         width = time * coefficient
+        width_m = time_m * coefficient_m
         pygame.draw.rect(screen, (118, 200, 250),
                          (size[0]//2-bar_size[0]//2 - 3, 110 - 3, bar_size[0]+6, bar_size[1]+6))
         pygame.draw.rect(screen, (212, 246, 254),
@@ -765,40 +750,18 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                 pygame.draw.circle(screen, (0, 0, 0),
                                    (size[0]+26*i-80, 26), 12, 1)
 
-        for k in bonuses.keys():
-            bonuses[k][0] -= time_step
-            i = list(bonuses).index(k)
-            screen.blit(bonuses[k][1], (383, 62+i*65))
-            pygame.draw.ellipse(screen, BLUE, (370, 50+i*65, 58, 58), width=7)
-            pygame.draw.arc(screen, WHITE,
-                            (372, 52 + i*65, 54, 54), 0, bonuses[k][0], width=4)
-            if bonuses[k][0] <= 0:
-                bonuses.pop(k)
-                if k == 'mushroom':
-                    my_pix = Pix(my_pix.x, my_pix.y, pix_Img)
-                elif k == 'carrot':
-                    for i in range(len(enemys)):
-                        if 'long' in enemys[i].picname:
-                            image = py_enemy[0]
-                        elif 'short' in enemys[i].picname:
-                            image = py_enemy[1]
-                        enemys[i].image = image[0]
-                        enemys[i].picname = image[1]
-                        enemys[i].width = (enemys[i].image).get_width()
-                    iscarrot = False
-                elif k == 'leaf':
-                    isleaf = False
-                    for i in range(len(platforms)):
-                        if platforms[i].dx > 0:
-                            platforms[i].dx = 3
-                        if platforms[i].dx < 0:
-                            platforms[i].dx = -3
-                    for i in range(len(enemys)):
-                        if enemys[i].dx > 0:
-                            enemys[i].dx = 3
-                        if enemys[i].dx < 0:
-                            enemys[i].dx = -3
-                break
+        if change == True:
+            screen.blit(mushroom, (370, 50))
+            bar_mushroom_rect = pygame.Rect(
+                4*size[0]//5-bar_size[0]//2+50, 90, bar_mushroom[0], bar_mushroom[1])
+            pygame.draw.rect(screen, (118, 200, 250), (
+                4*size[0]//5-bar_size[0]//2 + 50 - 3, 90 - 3, bar_mushroom[0]+6, bar_mushroom[1]+6))
+            pygame.draw.rect(screen, (212, 246, 254), (
+                4*size[0]//5-bar_size[0]//2 + 50 - 2, 90 - 2, bar_mushroom[0]+4, bar_mushroom[1]+4))
+            pygame.draw.rect(screen, (47, 109, 246), bar_mushroom_rect)
+            pygame.draw.rect(screen, (249, 229, 106), (
+                4*size[0]//5-bar_size[0]//2 + 50 + 1, 90 + 1, width_m, bar_mushroom[1]-2))
+
         pygame.display.flip()
         dt = clock.tick(fps)/500
 
@@ -841,7 +804,7 @@ def update_platform(platforms, enemys):
                             new[2][0], new[2][1], 3, False, 20))
     elif spec_case == 11:
         enemys.append(Enemy(new[0], enemys[-1].y+120,
-                            new[2][0], new[2][1], 3, False, 0, 2))
+                            new[2][0], new[2][1], 3, False, 0, 2, True))
     else:
         enemys.append(Enemy(new[0], enemys[-1].y+120, new[2][0], new[2][1]))
 
