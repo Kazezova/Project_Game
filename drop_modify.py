@@ -21,7 +21,7 @@ user_best_score = cur.execute('SELECT best_score FROM User').fetchone()[0]
 
 pygame.init()
 # game branding
-pygame.display.set_caption("Pix Drop")
+pygame.display.set_caption("Drop'd")
 icon = pygame.transform.scale(pygame.image.load("images/pix.png"), (32, 32))
 pygame.display.set_icon(icon)
 font = pygame.font.Font('Jesus_Heals.ttf', 60)
@@ -325,7 +325,8 @@ def menu(id):
                 enemys = [Enemy(data[i][0], data[i][1], data[i]
                                 [2][0], data[i][2][1]) for i in range(2, 5)]
                 pygame.mixer.Sound.play(start_sound)
-                game(pix_Img, pix_Img_big, 0, platforms, enemys, False, [], pix_dead_img, pix_dead_img_big)
+                game(pix_Img, pix_Img_big, 0, platforms, enemys,
+                     False, [], pix_dead_img, pix_dead_img_big)
                 running = False
         if skin_btn.collidepoint((mx, my)):
             if click:
@@ -555,9 +556,11 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                 col_dead = True
                 col_enemy = enemys[i]
                 if 'mushroom' in bonuses:
-                    my_pix.image = pygame.transform.scale(pix_dead_img_big, (64, 48))
+                    my_pix.image = pygame.transform.scale(
+                        pix_dead_img_big, (64, 48))
                 else:
-                    my_pix.image = pygame.transform.scale(pix_dead_img, (32, 24))
+                    my_pix.image = pygame.transform.scale(
+                        pix_dead_img, (32, 24))
                 dead = True
                 pygame.mixer.Sound.play(dead_sound)
         if col_dead:
@@ -585,7 +588,8 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
                                   user_score, platforms, enemys, balls, pix_dead_img, pix_dead_img_big)
                 else:
                     pygame.mixer.Sound.play(restart_sound)
-                    restart(pix_Img, pix_Img_big, user_score, pix_dead_img, pix_dead_img_big)
+                    restart(pix_Img, pix_Img_big, user_score,
+                            pix_dead_img, pix_dead_img_big)
                 running = False
 
         if bomb:
@@ -885,7 +889,8 @@ def restart(pix, pix_Img_big, score, pix_dead_img, pix_dead_img_big):
                                 [2][0], data[i][2][1]) for i in range(2, 5)]
                 pygame.mixer.Sound.stop(restart_sound)
                 pygame.mixer.Sound.play(start_sound)
-                game(pix, pix_Img_big, 0, platforms, enemys, False, [], pix_dead_img, pix_dead_img_big)
+                game(pix, pix_Img_big, 0, platforms, enemys,
+                     False, [], pix_dead_img, pix_dead_img_big)
                 running = False
         if home_btn.collidepoint((mx, my)):
             if click:
@@ -948,12 +953,14 @@ def continue_game(pix, pix_Img_big, score, platforms, enemys, balls, pix_dead_im
                 enemys = [Enemy(data[i][0], data[i][1], data[i]
                                 [2][0], data[i][2][1]) for i in range(2, 5)]
                 pygame.mixer.Sound.play(start_sound)
-                game(pix, pix_Img_big, score, platforms, enemys, True, balls, pix_dead_img, pix_dead_img_big)
+                game(pix, pix_Img_big, score, platforms, enemys,
+                     True, balls, pix_dead_img, pix_dead_img_big)
                 running = False
         elif not_cont_btn.collidepoint((mx, my)):
             if click:
                 pygame.mixer.Sound.play(restart_sound)
-                restart(pix, pix_Img_big, score, pix_dead_img, pix_dead_img_big)
+                restart(pix, pix_Img_big, score,
+                        pix_dead_img, pix_dead_img_big)
                 running = False
 
         s = pygame.Surface((size[0], size[1]), pygame.SRCALPHA)
@@ -1065,7 +1072,8 @@ def bonus_raund(pix, pix_big, user_score, color):
                 data[i][0], data[i][1], data[i][2][0], data[i][2][1]) for i in range(2)]
             enemys = [Enemy(data[i][0], data[i][1], data[i][2]
                             [0], data[i][2][1]) for i in range(2, 5)]
-            game(pix, pix_big, user_score, platforms, enemys, True, [], pix_dead_img, pix_dead_img_big)
+            game(pix, pix_big, user_score, platforms, enemys,
+                 True, [], pix_dead_img, pix_dead_img_big)
             running = False
 
         if camera_fall:
