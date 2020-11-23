@@ -38,6 +38,7 @@ cloud_dx = -1
 camera_y = 0
 
 # images
+drop_txt = pygame.image.load("images/drop_d.png")
 back_img = pygame.image.load("images/angryimg.png")
 cloud_img = pygame.image.load("images/cloud.png")
 opp = pygame.image.load("images/download.png")
@@ -158,15 +159,15 @@ class Pix:
 
     def col_left(self, smth):
         half_pix_x = self.width//2
-        if self.x+half_pix_x <= smth.x and self.x + self.width >= smth.x:
-            if self.y+self.height >= smth.y and self.y <= smth.y + smth.height:
+        if self.x+half_pix_x < smth.x and self.x + self.width > smth.x:
+            if self.y+self.height > smth.y and self.y < smth.y + smth.height:
                 return True
         return False
 
     def col_right(self, smth):
         half_pix_x = self.width//2
-        if self.x + half_pix_x >= smth.x + smth.width and self.x <= smth.x + smth.width:
-            if self.y+self.height >= smth.y and self.y <= smth.y + smth.height:
+        if self.x + half_pix_x > smth.x + smth.width and self.x < smth.x + smth.width:
+            if self.y+self.height > smth.y and self.y < smth.y + smth.height:
                 return True
         return False
 
@@ -286,6 +287,34 @@ def background(user_stars):
     screen.blit(star_font.render(
         f"{user_stars}", False, (255, 132, 37)), (40, 8))
 
+def loading():
+    load_img = pygame.image.load("images/loading.png")
+    running = True
+    cnt = 0
+    alpha = 3
+    opacity = 255
+    s = pygame.Surface(size).convert()
+    while running:
+        screen.fill((255, 255, 255))
+        if cnt > 60:
+            opacity -= alpha
+        # s.blit(screen, (-0, -0))
+        # screen.blit(load_img, (0,0))
+        # s.set_alpha(opacity)
+        load_img.set_alpha(opacity)
+        screen.blit(load_img, (0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                cur.close()
+                sys.exit()
+        if cnt == 120:
+            menu(character_id)
+            running = False
+        cnt += 1
+        pygame.display.flip()
+        clock.tick(fps)
+
 
 def menu(id):
     pix_Img = pygame.image.load(all_characters[id-1]["image"])
@@ -301,11 +330,11 @@ def menu(id):
         background(user_stars)
         mx, my = pygame.mouse.get_pos()
         btn = pygame.Rect(size[0]//2-start_btn.get_width()//2 + x,
-                          size[1] // 3 + pix_Img.get_height(),
+                          size[1] // 3 + pix_Img.get_height() + 50,
                           start_btn.get_width(),
                           start_btn.get_height()
                           )
-        skin_btn = pygame.Rect(size[0]//2-skin_btn_img.get_width()//2, size[1]//3 + 250,
+        skin_btn = pygame.Rect(size[0]//2-skin_btn_img.get_width()//2, size[1]//3 + 300,
                                skin_btn_img.get_width(),
                                skin_btn_img.get_height())
         click = False
@@ -338,18 +367,19 @@ def menu(id):
         if x <= -25 or x >= 25:
             dx *= -1
 
+        screen.blit(drop_txt, (size[0]//2 - drop_txt.get_width()//2, 100))
         screen.blit(best_score_img, (size[0]//2-best_score_img.get_width() //
-                                     2 + x, size[1]//3 - best_score_img.get_height() - 5))
+                                     2 + x, size[1]//3 - best_score_img.get_height() + 45))
         best_score = best_score_font.render(
             f"{user_best_score}", False, (255, 140, 16))
         screen.blit(best_score,
-                    (size[0]//2 - best_score.get_width()//2 + x, size[1]//3 - best_score_img.get_height()))
+                    (size[0]//2 - best_score.get_width()//2 + x, size[1]//3 - best_score_img.get_height()+50))
         screen.blit(
-            pix_Img, (size[0]//2-pix_Img.get_width()//2 + x, size[1]//3))
+            pix_Img, (size[0]//2-pix_Img.get_width()//2 + x, size[1]//3+50))
         screen.blit(start_btn, (size[0]//2-start_btn.get_width() //
-                                2 + x, size[1]//3 + pix_Img.get_height()))
+                                2 + x, size[1]//3 + pix_Img.get_height()+50))
         screen.blit(
-            skin_btn_img, (size[0]//2-skin_btn_img.get_width()//2, size[1]//3 + 250))
+            skin_btn_img, (size[0]//2-skin_btn_img.get_width()//2, size[1]//3 + 300))
         pygame.display.flip()
         clock.tick(fps)
 
@@ -476,8 +506,8 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
     pix_X = 100
     pix_Y = 0
     my_pix = Pix(pix_X, pix_Y, pix_Img)
-    platforms[-1].trick = trick["mushroom"]
-    platforms[-1].trick_name = "mushroom"
+    platforms[-1].trick = trick["star"]
+    platforms[-1].trick_name = "star"
     running = True
     fall = False
     camera_fall = False
@@ -772,7 +802,7 @@ def game(pix_Img, pix_Img_big, user_score, platforms, enemys, start=False, balls
             balls.pop(0)
         if len(balls) == 3 and len(set(balls)) == 1:
             pygame.mixer.Sound.play(bonus_sound)
-            bonus_raund(pix_Img, pix_Img_big, user_score-1, balls[0])
+            bonus_raund(pix_Img, pix_Img_big, user_score-1, balls[0], pix_dead_img, pix_dead_img_big)
             running = False
         for i in range(3):
             try:
@@ -982,7 +1012,7 @@ def continue_game(pix, pix_Img_big, score, platforms, enemys, balls, pix_dead_im
         clock.tick(fps)
 
 
-def bonus_raund(pix, pix_big, user_score, color):
+def bonus_raund(pix, pix_big, user_score, color, pix_dead_img, pix_dead_img_big):
     global user_stars
     my_pix = Pix((size[0]//2)-(pix_big.get_width()//2), 0, pix_big)
     running = True
@@ -1122,6 +1152,6 @@ def bonus_raund(pix, pix_big, user_score, color):
         dt = clock.tick(fps)/500
 
 
-menu(character_id)
+loading()
 pygame.quit()
 cur.close()
