@@ -207,7 +207,8 @@ class Platform:
             if self.x <= 0:
                 self.dx *= -1
             elif self.x >= size[0]-self.width+2:
-                self.dx *= -1
+                if self.dx > 0:
+                    self.dx *= -1
 
     def draw(self):
         screen.blit(self.image, (self.x, self.y))
