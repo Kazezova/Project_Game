@@ -183,7 +183,7 @@ class Platform:
     cnt = 0
     sz = 0
 
-    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, trick=None, trick_name=None, move_sharply=False):
+    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, trick=None, trick_name=None):
         self.image = image
         self.picname = picname
         self.x = x
@@ -196,7 +196,6 @@ class Platform:
         self.alpha = alpha
         self.trick = trick
         self.trick_name = trick_name
-        self.move_sharply = move_sharply
 
     def move(self):
         if self.special:
@@ -261,9 +260,9 @@ class Platform:
 
 
 class Enemy(Platform):
-    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2, move_sharply=False):
+    def __init__(self, x, y, image, picname, dx=3, special=False, opacity=0, alpha=2):
         super().__init__(x, y, image, picname, dx, special,
-                         opacity, alpha, None, None, move_sharply)
+                         opacity, alpha, None, None)
 
     def draw_smth(self, smth):
         screen.blit(smth, (self.x+(self.width//2) -
